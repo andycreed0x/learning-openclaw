@@ -369,13 +369,19 @@ stateDiagram-v2
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/zoom/zoom.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
   <script>
     mermaid.initialize({ startOnLoad: false, theme: 'dark' });
     Reveal.initialize({
       hash: true,
       slideNumber: true,
-      plugins: [RevealHighlight, RevealNotes],
+      width: 1280,
+      height: 720,
+      margin: 0.04,
+      minScale: 0.2,
+      maxScale: 2.0,
+      plugins: [RevealHighlight, RevealNotes, RevealZoom],
     }).then(() => {
       mermaid.run({ querySelector: '.mermaid' });
       Reveal.on('slidechanged', () => { mermaid.run({ querySelector: '.mermaid' }); });
