@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learning OpenClaw - Espa&ntilde;ol</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1a1a2e;
+      color: #ecf0f1;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container { max-width: 800px; margin: 0 auto; }
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .header h1 {
+      font-size: 2em;
+      color: #e74c3c;
+      margin-bottom: 5px;
+    }
+    .header p {
+      color: #f39c12;
+      font-size: 1.1em;
+    }
+    .lang-switch {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .lang-switch a {
+      color: #1abc9c;
+      text-decoration: none;
+      font-size: 0.9em;
+    }
+    .lang-switch a:hover { text-decoration: underline; }
+    .sessions {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .session-card {
+      display: flex;
+      align-items: center;
+      background: #16213e;
+      border: 1px solid #2c3e50;
+      border-radius: 12px;
+      padding: 20px 25px;
+      text-decoration: none;
+      color: #ecf0f1;
+      transition: all 0.3s ease;
+    }
+    .session-card:hover {
+      border-color: #e74c3c;
+      transform: translateX(5px);
+      box-shadow: 0 5px 20px rgba(231, 76, 60, 0.15);
+    }
+    .session-num {
+      font-size: 2em;
+      font-weight: 700;
+      color: #e74c3c;
+      min-width: 60px;
+      text-align: center;
+    }
+    .session-info { flex: 1; margin-left: 15px; }
+    .session-info h3 {
+      font-size: 1.2em;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .session-info p {
+      font-size: 0.85em;
+      color: #95a5a6;
+    }
+    .session-arrow {
+      color: #e74c3c;
+      font-size: 1.5em;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.8em;
+      color: #7f8c8d;
+    }
+    .footer a { color: #1abc9c; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+    .back-link {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .back-link a {
+      color: #1abc9c;
+      text-decoration: none;
+      font-size: 0.9em;
+    }
+    .back-link a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="back-link">
+      <a href="../index.html">&larr; Volver a Selecci&oacute;n de Idioma</a>
+    </div>
+
+    <div class="header">
+      <h1>Learning OpenClaw</h1>
+      <p>Curso Acelerado &mdash; 6 Sesiones</p>
+    </div>
+
+    <div class="lang-switch">
+      <a href="../en/index.html">Switch to English &#127468;&#127463;</a>
+    </div>
+
+    <div class="sessions">
+      <a href="session1.html" class="session-card">
+        <div class="session-num">01</div>
+        <div class="session-info">
+          <h3>&iquest;Qu&eacute; es OpenClaw?</h3>
+          <p>Visi&oacute;n general, diferenciadores clave, introducci&oacute;n a la arquitectura, modelos soportados</p>
+        </div>
+        <div class="session-arrow">&rarr;</div>
+      </a>
+
+      <a href="session2.html" class="session-card">
+        <div class="session-num">02</div>
+        <div class="session-info">
+          <h3>Arquitectura y Gateway</h3>
+          <p>Gateway en detalle, flujo de solicitudes, stack tecnol&oacute;gico, arquitectura multi-nodo, configuraci&oacute;n</p>
+        </div>
+        <div class="session-arrow">&rarr;</div>
+      </a>
+
+      <a href="session3.html" class="session-card">
+        <div class="session-num">03</div>
+        <div class="session-info">
+          <h3>Canales y Multi-Plataforma</h3>
+          <p>13+ plataformas, enrutamiento de canales, pol&iacute;ticas de MD, chat grupal, soporte de medios</p>
+        </div>
+        <div class="session-arrow">&rarr;</div>
+      </a>
+
+      <a href="session4.html" class="session-card">
+        <div class="session-num">04</div>
+        <div class="session-info">
+          <h3>Agentes, Memoria y Sesiones</h3>
+          <p>Aislamiento de agentes, archivos de personalidad, sistema de memoria, ciclo de vida de sesiones</p>
+        </div>
+        <div class="session-arrow">&rarr;</div>
+      </a>
+
+      <a href="session5.html" class="session-card">
+        <div class="session-num">05</div>
+        <div class="session-info">
+          <h3>Herramientas, Skills y Sandbox</h3>
+          <p>Categor&iacute;as de herramientas, plataforma de skills, modos de sandbox, aislamiento de seguridad</p>
+        </div>
+        <div class="session-arrow">&rarr;</div>
+      </a>
+
+      <a href="session6.html" class="session-card">
+        <div class="session-num">06</div>
+        <div class="session-info">
+          <h3>Instalaci&oacute;n, Config y Seguridad</h3>
+          <p>M&eacute;todos de instalaci&oacute;n, asistente de inicio, configuraci&oacute;n, capas de seguridad, referencia CLI</p>
+        </div>
+        <div class="session-arrow">&rarr;</div>
+      </a>
+    </div>
+
+    <div class="footer">
+      <p>
+        <a href="https://docs.openclaw.ai" target="_blank">docs.openclaw.ai</a> &middot;
+        <a href="https://github.com/openclaw/openclaw" target="_blank">GitHub</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

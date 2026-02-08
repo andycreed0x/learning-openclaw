@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&iquest;Qu&eacute; es OpenClaw? - Learning OpenClaw</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+  <link rel="stylesheet" href="../assets/custom.css">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- Diapositiva 1: Portada -->
+      <section>
+        <span class="session-badge">Sesi&oacute;n 1 de 6</span>
+        <h1>&iquest;Qu&eacute; es OpenClaw?</h1>
+        <pre class="ascii-art">
+  ___                    ____ _
+ / _ \ _ __   ___ _ __ / ___| | __ ___      __
+| | | | '_ \ / _ \ '_ \ |   | |/ _` \ \ /\ / /
+| |_| | |_) |  __/ | | | |___| | (_| |\ V  V /
+ \___/| .__/ \___|_| |_|\____|_|\__,_| \_/\_/
+      |_|
+        </pre>
+        <p class="medium">Tu plataforma personal de asistente IA auto-alojada</p>
+        <aside class="notes">
+          Bienvenidos a la Sesi&oacute;n 1 del curso Learning OpenClaw.
+          En esta sesi&oacute;n cubriremos qu&eacute; es OpenClaw, el problema que resuelve,
+          y te daremos una comprensi&oacute;n de alto nivel de c&oacute;mo funciona.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 2: El Problema -->
+      <section>
+        <h2>El Problema</h2>
+        <div class="columns">
+          <div class="col">
+            <ul>
+              <li class="fragment">Los asistentes de IA est&aacute;n <span class="red">encerrados en silos</span></li>
+              <li class="fragment">No hay forma de <span class="red">auto-alojar</span> tu propio asistente</li>
+              <li class="fragment">Sin soporte <span class="red">multi-canal</span> &mdash; atrapado en una sola app</li>
+              <li class="fragment"><span class="red">Dependencia del proveedor</span> de un solo servicio de IA</li>
+              <li class="fragment">Tus datos viven en <span class="red">los servidores de otros</span></li>
+            </ul>
+          </div>
+          <div class="col">
+            <pre class="ascii-art fragment">
+ Tu situaci&oacute;n hoy:
+
+ [ChatGPT] &larr; encerrado
+ [Claude]  &larr; encerrado
+ [Gemini]  &larr; encerrado
+
+ Apps diferentes,
+ contextos diferentes,
+ sin control.
+            </pre>
+          </div>
+        </div>
+        <aside class="notes">
+          Hoy en d&iacute;a, si quieres usar un asistente de IA, est&aacute;s atado a un solo proveedor.
+          Tus conversaciones, tus datos, tu contexto, todo atrapado en su plataforma.
+          No puedes elegir qu&eacute; modelo usar por conversaci&oacute;n, y ciertamente no puedes
+          acceder a tu asistente desde WhatsApp, Telegram y Discord simult&aacute;neamente.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 3: La Soluci&oacute;n -->
+      <section>
+        <h2>La Soluci&oacute;n: OpenClaw</h2>
+        <p class="medium">Una plataforma personal de asistente IA auto-alojada</p>
+        <div class="columns" style="margin-top: 20px;">
+          <div class="col">
+            <div class="highlight-box success fragment">
+              <strong class="green">Local-first</strong><br>
+              Se ejecuta en tu hardware. Tus datos son tuyos.
+            </div>
+            <div class="highlight-box info fragment">
+              <strong class="blue">Multi-canal</strong><br>
+              WhatsApp, Telegram, Discord, Slack, Web &mdash; todos a la vez.
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box warning fragment">
+              <strong class="yellow">Agn&oacute;stico de modelo</strong><br>
+              Usa OpenAI, Anthropic, Gemini, Ollama o cualquier API compatible.
+            </div>
+            <div class="highlight-box fragment">
+              <strong class="red">C&oacute;digo Abierto</strong><br>
+              Licenciado bajo AGPLv3. Inspecciona, modifica, contribuye.
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          OpenClaw es la respuesta. Es una plataforma auto-alojada que te permite ejecutar
+          tu propio asistente de IA. Soporta m&uacute;ltiples canales de mensajer&iacute;a simult&aacute;neamente,
+          funciona con cualquier proveedor de modelos de IA, y es completamente c&oacute;digo abierto
+          bajo la licencia AGPLv3. Tus datos nunca salen de tu infraestructura.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 4: Arquitectura de Alto Nivel (Mermaid) -->
+      <section>
+        <h2>Arquitectura de Alto Nivel</h2>
+        <div class="mermaid">
+graph LR
+    U["&#x1F464; Usuario"] --> CH["&#x1F4F1; Canales"]
+    CH --> GW["&#x1F500; Gateway"]
+    GW --> AI["&#x1F916; Modelos IA"]
+    AI --> T["&#x1F527; Herramientas"]
+        </div>
+        <div class="highlight-box info fragment" style="margin-top: 20px;">
+          <strong>4 capas principales:</strong> Los usuarios interact&uacute;an a trav&eacute;s de Canales, que se conectan al Gateway,
+          que enruta hacia Modelos de IA que pueden invocar Herramientas.
+        </div>
+        <aside class="notes">
+          En su forma m&aacute;s simple, OpenClaw tiene cuatro capas. Los usuarios env&iacute;an mensajes
+          a trav&eacute;s de canales como WhatsApp o Telegram. Esos mensajes fluyen hacia el Gateway,
+          que es el orquestador central. El Gateway los enruta hacia agentes de IA, y esos
+          agentes pueden llamar herramientas para navegar la web, ejecutar c&oacute;digo,
+          programar tareas, y m&aacute;s.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 5: Diferenciadores Clave -->
+      <section>
+        <h2>Diferenciadores Clave</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Caracter&iacute;stica</th>
+              <th class="green">OpenClaw</th>
+              <th>ChatGPT</th>
+              <th>Claude</th>
+              <th>Gemini</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="fragment">
+              <td>Auto-alojado</td>
+              <td class="green">S&iacute;</td>
+              <td class="red">No</td>
+              <td class="red">No</td>
+              <td class="red">No</td>
+            </tr>
+            <tr class="fragment">
+              <td>Multi-canal</td>
+              <td class="green">S&iacute;</td>
+              <td class="red">No</td>
+              <td class="red">No</td>
+              <td class="red">No</td>
+            </tr>
+            <tr class="fragment">
+              <td>Elecci&oacute;n de modelo</td>
+              <td class="green">Cualquiera</td>
+              <td class="yellow">Solo GPT</td>
+              <td class="yellow">Solo Claude</td>
+              <td class="yellow">Solo Gemini</td>
+            </tr>
+            <tr class="fragment">
+              <td>C&oacute;digo abierto</td>
+              <td class="green">AGPLv3</td>
+              <td class="red">No</td>
+              <td class="red">No</td>
+              <td class="red">No</td>
+            </tr>
+            <tr class="fragment">
+              <td>Ejecuci&oacute;n de herramientas</td>
+              <td class="green">Extensible</td>
+              <td class="yellow">Limitado</td>
+              <td class="yellow">Limitado</td>
+              <td class="yellow">Limitado</td>
+            </tr>
+            <tr class="fragment">
+              <td>Propiedad de datos</td>
+              <td class="green">100% tuyos</td>
+              <td class="red">De ellos</td>
+              <td class="red">De ellos</td>
+              <td class="red">De ellos</td>
+            </tr>
+          </tbody>
+        </table>
+        <aside class="notes">
+          Esta tabla lo deja claro. OpenClaw es la &uacute;nica opci&oacute;n que te da control total:
+          auto-alojado, multi-canal, funciona con cualquier modelo, c&oacute;digo abierto,
+          herramientas extensibles y propiedad completa de los datos.
+          Ning&uacute;n otro asistente principal ofrece todo esto junto.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 6: C&oacute;mo Funciona -->
+      <section>
+        <h2>&iquest;C&oacute;mo Funciona?</h2>
+        <p class="medium">Un flujo de mensajes simplificado</p>
+        <pre class="ascii-art">
+  &#x1F4AC; Mensaje                &#x1F4E8; Respuesta
+     |                        ^
+     v                        |
+ +----------+           +----------+
+ |  Canal   |           |  Canal   |
+ | (WA/TG)  |           | (WA/TG)  |
+ +----+-----+           +----+-----+
+      |                       ^
+      v     WebSocket         |
+ +----------+           +----------+
+ | Gateway  | --------> | Gateway  |
+ | (Router) |           | (Router) |
+ +----+-----+           +----+-----+
+      |                       ^
+      v                       |
+ +----------+           +----------+
+ |  Agente  | --------> |  Agente  |
+ | (IA+Sys) |  piensa   | (IA+Sys) |
+ +----+-----+           +----+-----+
+      |                       ^
+      v                       |
+ +----------+           +----------+
+ | Herram.  | --------> | Herram.  |
+ | (opc.)   | resultados| (opc.)   |
+ +----------+           +----------+
+        </pre>
+        <aside class="notes">
+          Aqu&iacute; est&aacute; el ciclo de vida del mensaje. Un usuario env&iacute;a un mensaje a trav&eacute;s de un canal.
+          El canal lo reenv&iacute;a al Gateway v&iacute;a WebSocket. El Gateway lo enruta al agente
+          apropiado, que lo procesa usando un modelo de IA. Si el agente necesita tomar
+          acci&oacute;n, llama a herramientas. La respuesta fluye de regreso por el mismo
+          camino hacia el usuario.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 7: Modelos Soportados -->
+      <section>
+        <h2>Modelos Soportados</h2>
+        <p class="medium">Usa cualquier modelo, cambia en cualquier momento</p>
+        <div class="columns" style="margin-top: 15px;">
+          <div class="col">
+            <div class="highlight-box info fragment">
+              <strong class="blue">OpenAI</strong><br>
+              GPT-4o, GPT-4, GPT-3.5
+            </div>
+            <div class="highlight-box fragment">
+              <strong class="red">Anthropic</strong><br>
+              Claude Opus, Sonnet, Haiku
+            </div>
+            <div class="highlight-box warning fragment">
+              <strong class="yellow">Google Gemini</strong><br>
+              Gemini Pro, Gemini Flash
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box success fragment">
+              <strong class="green">Ollama (Local)</strong><br>
+              Llama, Mistral, Phi &mdash; completamente offline
+            </div>
+            <div class="highlight-box fragment" style="border-left-color: var(--oc-purple);">
+              <strong class="purple">OpenRouter</strong><br>
+              Accede a m&aacute;s de 100 modelos con una sola API
+            </div>
+            <div class="highlight-box fragment" style="border-left-color: var(--oc-cyan);">
+              <strong class="cyan">Cualquier API compatible con OpenAI</strong><br>
+              LM Studio, vLLM, text-generation-webui
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          OpenClaw es verdaderamente agn&oacute;stico de modelo. Puedes usar OpenAI, Anthropic Claude,
+          Google Gemini, o ejecutar modelos localmente con Ollama para privacidad completa.
+          OpenRouter te da acceso a m&aacute;s de 100 modelos. Y si tienes cualquier servidor de API
+          compatible con OpenAI, OpenClaw funciona con &eacute;l directamente. Incluso puedes usar
+          diferentes modelos para diferentes agentes.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 8: Lo Que Aprender&aacute;s -->
+      <section>
+        <h2>Lo Que Aprender&aacute;s</h2>
+        <p class="medium">Hoja de ruta para las 5 sesiones restantes</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Sesi&oacute;n</th>
+              <th>Tema</th>
+              <th>Enfoque Principal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="fragment">
+              <td><span class="session-badge">2</span></td>
+              <td>Arquitectura y Gateway</td>
+              <td>Componentes centrales, protocolo WebSocket, configuraci&oacute;n</td>
+            </tr>
+            <tr class="fragment">
+              <td><span class="session-badge">3</span></td>
+              <td>Canales y Nodos</td>
+              <td>Configuraci&oacute;n multi-canal, nodos distribuidos</td>
+            </tr>
+            <tr class="fragment">
+              <td><span class="session-badge">4</span></td>
+              <td>Agentes y Sesiones</td>
+              <td>Personalidades IA, memoria, gesti&oacute;n de contexto</td>
+            </tr>
+            <tr class="fragment">
+              <td><span class="session-badge">5</span></td>
+              <td>Herramientas y Extensibilidad</td>
+              <td>Herramientas integradas, herramientas personalizadas, sandboxing</td>
+            </tr>
+            <tr class="fragment">
+              <td><span class="session-badge">6</span></td>
+              <td>Despliegue y Operaciones</td>
+              <td>Configuraci&oacute;n de producci&oacute;n, monitoreo, mejores pr&aacute;cticas</td>
+            </tr>
+          </tbody>
+        </table>
+        <aside class="notes">
+          A lo largo de las pr&oacute;ximas cinco sesiones, profundizaremos en cada parte de OpenClaw.
+          La Sesi&oacute;n 2 cubre la arquitectura y el gateway. La Sesi&oacute;n 3 trata sobre canales
+          y nodos distribuidos. La Sesi&oacute;n 4 se sumerge en agentes y gesti&oacute;n de sesiones.
+          La Sesi&oacute;n 5 explora el sistema de herramientas y extensibilidad. Y la Sesi&oacute;n 6
+          concluye con despliegue y mejores pr&aacute;cticas operacionales.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 9: Recursos -->
+      <section>
+        <h2>Recursos</h2>
+        <div class="highlight-box info">
+          <strong class="blue">Documentaci&oacute;n Oficial</strong><br>
+          <a href="https://docs.openclaw.ai" target="_blank">docs.openclaw.ai</a>
+          &mdash; Referencia completa, gu&iacute;as y documentaci&oacute;n de API
+        </div>
+        <div class="highlight-box success">
+          <strong class="green">C&oacute;digo Fuente</strong><br>
+          <a href="https://github.com/openclaw/openclaw" target="_blank">github.com/openclaw/openclaw</a>
+          &mdash; Dale estrella, haz fork y contribuye
+        </div>
+        <div class="highlight-box warning">
+          <strong class="yellow">Comunidad</strong><br>
+          <a href="https://docs.openclaw.ai/help" target="_blank">docs.openclaw.ai/help</a>
+          &mdash; Obt&eacute;n ayuda, reporta errores, participa en discusiones
+        </div>
+        <div class="fragment" style="margin-top: 30px;">
+          <p class="medium">
+            Siguiente: <strong class="cyan">Sesi&oacute;n 2 &mdash; Arquitectura y Gateway</strong>
+          </p>
+          <p class="small">
+            <a href="session2.html">Ir a la Sesi&oacute;n 2 &rarr;</a>
+          </p>
+        </div>
+        <aside class="notes">
+          Aqu&iacute; est&aacute;n los recursos clave para guardar en marcadores. La documentaci&oacute;n oficial
+          en docs.openclaw.ai es tu referencia principal. El repositorio de GitHub es donde
+          puedes explorar el c&oacute;digo fuente y contribuir. Y la p&aacute;gina de ayuda te conecta
+          con la comunidad para soporte y discusiones.
+          Nos vemos en la Sesi&oacute;n 2 donde profundizaremos en la arquitectura y el gateway.
+        </aside>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <a href="index.html">&larr; Tabla de Contenidos</a> &middot; Sesi&oacute;n 1 de 6
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+    Reveal.initialize({
+      hash: true,
+      slideNumber: true,
+      plugins: [RevealHighlight, RevealNotes],
+    }).then(() => {
+      mermaid.run({ querySelector: '.mermaid' });
+      Reveal.on('slidechanged', () => { mermaid.run({ querySelector: '.mermaid' }); });
+    });
+  </script>
+</body>
+</html>

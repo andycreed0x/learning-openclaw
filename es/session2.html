@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arquitectura y Gateway - Learning OpenClaw</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+  <link rel="stylesheet" href="../assets/custom.css">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- Diapositiva 1: Portada -->
+      <section>
+        <span class="session-badge">Sesi&oacute;n 2 de 6</span>
+        <h1>Arquitectura y Gateway</h1>
+        <p class="medium">El cerebro de OpenClaw por dentro</p>
+        <pre class="ascii-art">
+ +-------------------------------------------+
+ |              G A T E W A Y                |
+ |  +----------+  +---------+  +---------+  |
+ |  | Enrutador|  | Sesiones|  | Config  |  |
+ |  +----------+  +---------+  +---------+  |
+ +-------------------------------------------+
+        </pre>
+        <aside class="notes">
+          Bienvenidos a la Sesi&oacute;n 2. Hoy exploraremos la arquitectura interna de OpenClaw
+          y profundizaremos en el Gateway, el componente central que orquesta todo el sistema.
+          Entenderemos c&oacute;mo fluyen los mensajes, c&oacute;mo se gestionan las sesiones,
+          y c&oacute;mo se configura todo con JSON5.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 2: Vista General de Componentes -->
+      <section>
+        <h2>Los 6 Componentes Centrales</h2>
+        <div class="columns">
+          <div class="col">
+            <div class="highlight-box info fragment">
+              <strong class="blue">Gateway</strong><br>
+              Orquestador central. Enruta mensajes y gestiona sesiones.
+            </div>
+            <div class="highlight-box success fragment">
+              <strong class="green">Canales</strong><br>
+              Conectores a plataformas: WhatsApp, Telegram, Discord, etc.
+            </div>
+            <div class="highlight-box warning fragment">
+              <strong class="yellow">Agentes</strong><br>
+              Personalidades de IA con modelo, instrucciones y herramientas.
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box fragment" style="border-left-color: var(--oc-purple);">
+              <strong class="purple">Nodos</strong><br>
+              Instancias que ejecutan canales y se conectan al Gateway.
+            </div>
+            <div class="highlight-box fragment" style="border-left-color: var(--oc-cyan);">
+              <strong class="cyan">Sesiones</strong><br>
+              Contexto y memoria de cada conversaci&oacute;n usuario-agente.
+            </div>
+            <div class="highlight-box fragment">
+              <strong class="red">Herramientas</strong><br>
+              Capacidades externas: navegador, ejecuci&oacute;n de c&oacute;digo, cron, etc.
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          OpenClaw se compone de seis piezas fundamentales. El Gateway es el cerebro central.
+          Los Canales conectan con plataformas de mensajer&iacute;a. Los Agentes definen personalidades
+          de IA. Los Nodos son instancias distribuidas. Las Sesiones mantienen el contexto.
+          Y las Herramientas extienden las capacidades del agente.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 3: Diagrama de Arquitectura Completo (Mermaid) -->
+      <section>
+        <h2>Diagrama de Arquitectura</h2>
+        <div class="mermaid">
+graph TB
+    subgraph Canales
+        WA[WhatsApp]
+        TG[Telegram]
+        DC[Discord]
+        WB[Web]
+        SL[Slack]
+    end
+    subgraph Gateway
+        WS["Servidor WebSocket :18789"]
+        RT[Enrutador]
+        SM["Gestor de Sesiones"]
+    end
+    subgraph Agentes
+        A1["Agente 1"]
+        A2["Agente 2"]
+    end
+    subgraph Herramientas
+        BR[Navegador]
+        EX["Ejecucion"]
+        CR[Cron]
+    end
+    Canales --> WS
+    WS --> RT
+    RT --> SM
+    SM --> A1
+    SM --> A2
+    A1 --> Herramientas
+    A2 --> Herramientas
+        </div>
+        <p class="small fragment">Todos los componentes se comunican a trav&eacute;s del Gateway mediante WebSocket.</p>
+        <aside class="notes">
+          Este diagrama muestra la arquitectura completa. Los canales se conectan al servidor
+          WebSocket del Gateway en el puerto 18789. El enrutador decide qu&eacute; agente maneja
+          cada mensaje. El gestor de sesiones mantiene el contexto. Los agentes pueden
+          acceder a herramientas como el navegador, ejecuci&oacute;n de c&oacute;digo y tareas programadas.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 4: El Gateway en Detalle -->
+      <section>
+        <h2>El Gateway en Detalle</h2>
+        <div class="highlight-box info">
+          <strong class="blue">Plano de control WebSocket</strong><br>
+          Escucha en el puerto <code>18789</code> por defecto. Todas las comunicaciones pasan por aqu&iacute;.
+        </div>
+        <div class="highlight-box success fragment">
+          <strong class="green">Configuraci&oacute;n recargable en caliente</strong><br>
+          Modifica <code>openclaw.json</code> y los cambios se aplican sin reiniciar.
+        </div>
+        <div class="highlight-box warning fragment">
+          <strong class="yellow">Orquestador central</strong><br>
+          Gestiona el enrutamiento de mensajes, sesiones activas y conexiones de nodos.
+        </div>
+        <div class="highlight-box fragment" style="border-left-color: var(--oc-purple);">
+          <strong class="purple">Estado centralizado</strong><br>
+          Mantiene el registro de todos los nodos, canales y agentes conectados.
+        </div>
+        <aside class="notes">
+          El Gateway es el coraz&oacute;n de OpenClaw. Todo pasa por &eacute;l. Funciona como un plano
+          de control WebSocket en el puerto 18789. Una de sus caracter&iacute;sticas m&aacute;s potentes
+          es la recarga en caliente: puedes modificar la configuraci&oacute;n y los cambios se
+          aplican inmediatamente sin necesidad de reiniciar el servicio.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 5: Flujo de Solicitud (ASCII art) -->
+      <section>
+        <h2>Flujo de una Solicitud</h2>
+        <pre class="ascii-art">
+Mensaje del Usuario
+    |
+    v
++------------+
+|   Canal    |  (WhatsApp, Telegram, etc.)
++-----+------+
+      | WebSocket
+      v
++------------+
+|  Gateway   |  (Enrutador + Gestor de Sesiones)
++-----+------+
+      |
+      v
++------------+
+|   Agente   |  (Modelo IA + Personalidad)
++-----+------+
+      |
+      v
++--------------+
+| Herramientas |  (Navegador, Exec, Cron...)
++--------------+
+      |
+      v
+  Respuesta al Usuario
+        </pre>
+        <aside class="notes">
+          Aqu&iacute; vemos el flujo completo de una solicitud. El usuario env&iacute;a un mensaje
+          que llega a un canal. El canal lo transmite al Gateway v&iacute;a WebSocket.
+          El Gateway identifica la sesi&oacute;n y enruta al agente correspondiente.
+          El agente procesa el mensaje con su modelo de IA y, si es necesario,
+          invoca herramientas. Finalmente, la respuesta regresa por el mismo camino.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 6: Stack Tecnol&oacute;gico -->
+      <section>
+        <h2>Stack Tecnol&oacute;gico</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Componente</th>
+              <th>Tecnolog&iacute;a</th>
+              <th>Detalles</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="fragment">
+              <td class="cyan">Runtime</td>
+              <td>Node.js / TypeScript</td>
+              <td>Rendimiento y tipado fuerte</td>
+            </tr>
+            <tr class="fragment">
+              <td class="blue">Protocolo</td>
+              <td>WebSocket</td>
+              <td>Comunicaci&oacute;n bidireccional en tiempo real</td>
+            </tr>
+            <tr class="fragment">
+              <td class="yellow">Configuraci&oacute;n</td>
+              <td>JSON5</td>
+              <td>JSON con comentarios y trailing commas</td>
+            </tr>
+            <tr class="fragment">
+              <td class="green">IA</td>
+              <td>Multi-proveedor</td>
+              <td>OpenAI, Anthropic, Gemini, Ollama, etc.</td>
+            </tr>
+            <tr class="fragment">
+              <td class="purple">Base de Datos</td>
+              <td>SQLite</td>
+              <td>Almacenamiento de sesiones y persistencia</td>
+            </tr>
+            <tr class="fragment">
+              <td class="red">Sandbox</td>
+              <td>isolated-vm</td>
+              <td>Ejecuci&oacute;n segura de c&oacute;digo aislado</td>
+            </tr>
+          </tbody>
+        </table>
+        <aside class="notes">
+          El stack tecnol&oacute;gico de OpenClaw est&aacute; dise&ntilde;ado para ser ligero y eficiente.
+          Node.js con TypeScript proporciona rendimiento y seguridad de tipos.
+          WebSocket permite comunicaci&oacute;n bidireccional en tiempo real. JSON5 hace
+          la configuraci&oacute;n m&aacute;s amigable que JSON puro. SQLite mantiene todo simple
+          sin necesidad de un servidor de base de datos separado. Y isolated-vm
+          proporciona sandboxing seguro para la ejecuci&oacute;n de herramientas.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 7: Configuraci&oacute;n -->
+      <section>
+        <h2>Configuraci&oacute;n: openclaw.json</h2>
+        <p class="medium">Formato JSON5 con recarga en caliente</p>
+        <pre><code class="language-json5" data-trim>
+{
+  // Configuraci&oacute;n del Gateway
+  gateway: {
+    port: 18789,
+    secret: "$GATEWAY_SECRET",
+  },
+
+  // Agentes disponibles
+  agents: {
+    "mi-asistente": {
+      model: "openai:gpt-4o",
+      systemPrompt: "Eres un asistente &uacute;til...",
+      tools: ["browser", "exec"],
+    },
+  },
+
+  // Incluir archivos externos
+  $include: ["./canales.json", "./herramientas.json"],
+}
+        </code></pre>
+        <div class="highlight-box warning fragment">
+          <strong>Consejo:</strong> Usa <code>$include</code> para dividir configuraciones grandes
+          en archivos m&aacute;s manejables.
+        </div>
+        <aside class="notes">
+          La configuraci&oacute;n de OpenClaw se define en un archivo openclaw.json usando formato JSON5.
+          JSON5 permite comentarios, trailing commas y claves sin comillas, lo que lo hace
+          mucho m&aacute;s legible. La directiva dollar-include permite dividir la configuraci&oacute;n
+          en m&uacute;ltiples archivos. Y lo mejor: al guardar cambios, se recargan autom&aacute;ticamente
+          sin reiniciar el servicio.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 8: Arquitectura Multi-Nodo (Mermaid) -->
+      <section>
+        <h2>Arquitectura Multi-Nodo</h2>
+        <div class="mermaid">
+graph TB
+    GW["Gateway :18789"]
+    N1["Nodo 1 - Local"]
+    N2["Nodo 2 - VPS en la Nube"]
+    N3["Nodo 3 - Servidor Domestico"]
+    GW --> N1
+    GW --> N2
+    GW --> N3
+    N1 --> C1["WhatsApp + Telegram"]
+    N2 --> C2["Discord + Slack"]
+    N3 --> C3["Web + Matrix"]
+        </div>
+        <div class="highlight-box info fragment" style="margin-top: 15px;">
+          <strong>Escalabilidad:</strong> Distribuye canales entre m&uacute;ltiples nodos seg&uacute;n
+          tus necesidades de ubicaci&oacute;n, rendimiento o redundancia.
+        </div>
+        <aside class="notes">
+          OpenClaw soporta una arquitectura multi-nodo. El Gateway es el punto central,
+          y m&uacute;ltiples nodos pueden conectarse a &eacute;l. Cada nodo ejecuta uno o m&aacute;s canales.
+          Esto permite despliegues distribuidos: puedes tener un nodo en tu casa para
+          WhatsApp, otro en una VPS en la nube para Discord, y otro en un servidor
+          dom&eacute;stico para la interfaz web. Todos comparten los mismos agentes y sesiones
+          a trav&eacute;s del Gateway.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 9: Nodos Explicados -->
+      <section>
+        <h2>Nodos Explicados</h2>
+        <div class="columns">
+          <div class="col">
+            <h3>&iquest;Qu&eacute; es un Nodo?</h3>
+            <ul>
+              <li class="fragment">Una <span class="cyan">instancia</span> que ejecuta canales</li>
+              <li class="fragment">Se conecta al Gateway v&iacute;a <span class="blue">WebSocket</span></li>
+              <li class="fragment">Puede ejecutarse en <span class="green">cualquier m&aacute;quina</span></li>
+              <li class="fragment">M&uacute;ltiples nodos pueden coexistir</li>
+            </ul>
+          </div>
+          <div class="col">
+            <h3>Casos de Uso</h3>
+            <div class="highlight-box success fragment">
+              <strong>Simple:</strong> Un solo nodo con todos los canales en la misma m&aacute;quina que el Gateway.
+            </div>
+            <div class="highlight-box info fragment">
+              <strong>Distribuido:</strong> Gateway en la nube, nodos en diferentes ubicaciones.
+            </div>
+            <div class="highlight-box warning fragment">
+              <strong>Redundante:</strong> M&uacute;ltiples nodos para el mismo canal como respaldo.
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          Un nodo es simplemente una instancia de OpenClaw que ejecuta canales.
+          En el caso m&aacute;s simple, tienes un solo nodo en la misma m&aacute;quina que el Gateway.
+          Pero puedes escalar a m&uacute;ltiples nodos distribuidos geogr&aacute;ficamente.
+          Cada nodo se autentica con el Gateway usando un secreto compartido
+          y mantiene una conexi&oacute;n WebSocket persistente.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 10: Conclusiones Clave -->
+      <section>
+        <h2>Conclusiones Clave</h2>
+        <div class="highlight-box success fragment">
+          <strong class="green">1. El Gateway es el cerebro</strong><br>
+          Todo el tr&aacute;fico pasa por el Gateway. Es el orquestador central que enruta
+          mensajes, gestiona sesiones y coordina agentes.
+        </div>
+        <div class="highlight-box info fragment">
+          <strong class="blue">2. Todo se conecta v&iacute;a WebSocket</strong><br>
+          Un protocolo &uacute;nico y bidireccional para toda la comunicaci&oacute;n interna.
+          Simple, eficiente y en tiempo real.
+        </div>
+        <div class="highlight-box warning fragment">
+          <strong class="yellow">3. JSON5 con recarga en caliente</strong><br>
+          La configuraci&oacute;n es legible, modular con <code>$include</code>, y se aplica
+          sin reiniciar el sistema.
+        </div>
+        <aside class="notes">
+          Tres puntos clave para recordar de esta sesi&oacute;n. Primero, el Gateway es el
+          componente central, todo fluye a trav&eacute;s de &eacute;l. Segundo, WebSocket es el
+          protocolo universal de comunicaci&oacute;n interna. Tercero, la configuraci&oacute;n
+          en JSON5 es flexible y se recarga en caliente, lo que permite ajustes
+          r&aacute;pidos sin tiempo de inactividad.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 11: Recursos -->
+      <section>
+        <h2>Recursos</h2>
+        <div class="highlight-box info">
+          <strong class="blue">Documentaci&oacute;n de Arquitectura</strong><br>
+          <a href="https://docs.openclaw.ai/architecture" target="_blank">docs.openclaw.ai/architecture</a>
+          &mdash; Gu&iacute;a completa de la arquitectura del sistema
+        </div>
+        <div class="highlight-box success">
+          <strong class="green">Documentaci&oacute;n del Gateway</strong><br>
+          <a href="https://docs.openclaw.ai/gateway" target="_blank">docs.openclaw.ai/gateway</a>
+          &mdash; Referencia completa del Gateway y su configuraci&oacute;n
+        </div>
+        <div class="highlight-box warning">
+          <strong class="yellow">Configuraci&oacute;n JSON5</strong><br>
+          <a href="https://docs.openclaw.ai/configuration" target="_blank">docs.openclaw.ai/configuration</a>
+          &mdash; Referencia de todas las opciones de configuraci&oacute;n
+        </div>
+        <div class="fragment" style="margin-top: 30px;">
+          <p class="medium">
+            Siguiente: <strong class="cyan">Sesi&oacute;n 3 &mdash; Canales y Multi-Plataforma</strong>
+          </p>
+          <p class="small">
+            <a href="session3.html">Ir a la Sesi&oacute;n 3 &rarr;</a>
+          </p>
+        </div>
+        <aside class="notes">
+          Aqu&iacute; tienes los enlaces de documentaci&oacute;n relevantes para profundizar m&aacute;s.
+          La documentaci&oacute;n de arquitectura te da una visi&oacute;n completa del sistema.
+          La documentaci&oacute;n del Gateway cubre todos los detalles de configuraci&oacute;n
+          y operaci&oacute;n. En la pr&oacute;xima sesi&oacute;n exploraremos los canales y c&oacute;mo
+          conectar OpenClaw a m&uacute;ltiples plataformas de mensajer&iacute;a.
+        </aside>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <a href="index.html">&larr; Tabla de Contenidos</a> &middot; Sesi&oacute;n 2 de 6
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+    Reveal.initialize({
+      hash: true,
+      slideNumber: true,
+      plugins: [RevealHighlight, RevealNotes],
+    }).then(() => {
+      mermaid.run({ querySelector: '.mermaid' });
+      Reveal.on('slidechanged', () => { mermaid.run({ querySelector: '.mermaid' }); });
+    });
+  </script>
+</body>
+</html>

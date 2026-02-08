@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentes, Memoria y Sesiones - Learning OpenClaw</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+  <link rel="stylesheet" href="../assets/custom.css">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- Slide 1: Portada -->
+      <section>
+        <span class="session-badge">Sesi&oacute;n 4 de 6</span>
+        <h1>Agentes, Memoria y Sesiones</h1>
+        <p>Construyendo personalidades de IA que recuerdan</p>
+        <p class="small">Agentes aislados con contexto persistente</p>
+        <aside class="notes">
+          Bienvenidos a la Sesi&oacute;n 4. Aqu&iacute; es donde OpenClaw se vuelve verdaderamente
+          poderoso. Cubriremos c&oacute;mo crear agentes con personalidades distintas, c&oacute;mo
+          funciona el sistema de memoria para darle continuidad a tu asistente entre
+          conversaciones, y c&oacute;mo las sesiones gestionan el ciclo de vida de cada interacci&oacute;n.
+        </aside>
+      </section>
+
+      <!-- Slide 2: Qu&eacute; es un Agente -->
+      <section>
+        <h2>&iquest;Qu&eacute; es un Agente?</h2>
+        <div class="highlight-box info">
+          <strong>Agente</strong> = una personalidad de IA con su propio espacio de trabajo,
+          herramientas y memoria. Cada agente est&aacute; <span class="cyan">completamente aislado</span>
+          de los dem&aacute;s.
+        </div>
+        <ul>
+          <li class="fragment">Tiene su propio <span class="yellow">prompt de sistema</span> y reglas de comportamiento</li>
+          <li class="fragment">Mantiene <span class="green">memoria separada</span> por usuario</li>
+          <li class="fragment">Puede acceder a diferentes <span class="purple">herramientas y skills</span></li>
+          <li class="fragment">Se ejecuta en un <span class="cyan">entorno aislado (sandbox)</span></li>
+        </ul>
+        <div class="highlight-box warning fragment">
+          <strong>Concepto clave:</strong> Los agentes no comparten memoria ni contexto.
+          Lo que un agente sabe, otro no lo sabe.
+        </div>
+        <aside class="notes">
+          Piensa en los agentes como empleados separados, cada uno con su propio
+          escritorio, archivos y experiencia. Un agente asistente no sabe en qu&eacute;
+          est&aacute; trabajando el agente desarrollador, y viceversa. Este aislamiento es
+          intencional: mantiene las responsabilidades separadas y previene fugas de datos.
+        </aside>
+      </section>
+
+      <!-- Slide 3: Estructura del Espacio de Trabajo -->
+      <section>
+        <h2>Estructura del Espacio de Trabajo</h2>
+        <pre class="ascii-art">
+workspace/
+├── agents/
+│   └── mi-agente/
+│       ├── AGENTS.md    &larr; Comportamiento y reglas
+│       ├── SOUL.md      &larr; Personalidad y tono
+│       ├── TOOLS.md     &larr; Config de herramientas
+│       ├── USER.md      &larr; Contexto por usuario
+│       └── MEMORY.md    &larr; Memoria a largo plazo
+├── skills/              &larr; Skills personalizados
+└── sandbox/             &larr; Ejecuci&oacute;n aislada
+        </pre>
+        <div class="highlight-box success fragment">
+          <strong>Todo son archivos.</strong> La configuraci&oacute;n del agente son simplemente archivos
+          markdown en un directorio. Ed&iacute;talos con cualquier editor de texto.
+        </div>
+        <aside class="notes">
+          El espacio de trabajo es el coraz&oacute;n del sistema de agentes de OpenClaw. Cada
+          agente vive en su propio subdirectorio bajo agents/. Toda la configuraci&oacute;n se
+          hace a trav&eacute;s de archivos markdown, lo que facilita el control de versiones,
+          la revisi&oacute;n y la colaboraci&oacute;n en el comportamiento del agente. Sin bases de
+          datos, sin paneles de administraci&oacute;n para esto.
+        </aside>
+      </section>
+
+      <!-- Slide 4: Archivos de Personalidad Explicados -->
+      <section>
+        <h2>Archivos de Personalidad</h2>
+        <div class="columns">
+          <div class="col">
+            <div class="highlight-box info fragment">
+              <strong>AGENTS.md</strong><br>
+              Prompt del sistema, reglas de comportamiento, estilo de respuesta.
+              Las instrucciones principales del agente.
+            </div>
+            <div class="highlight-box success fragment">
+              <strong>SOUL.md</strong><br>
+              Rasgos de personalidad, tono, preferencias de idioma.
+              Hace que el agente se sienta &uacute;nico y consistente.
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box warning fragment">
+              <strong>TOOLS.md</strong><br>
+              Qu&eacute; herramientas puede usar el agente y c&oacute;mo.
+              Controla las capacidades y permisos.
+            </div>
+            <div class="highlight-box fragment">
+              <strong>USER.md</strong><br>
+              Contexto espec&iacute;fico por usuario, auto-generado.
+              Almacena preferencias e interacciones pasadas.
+            </div>
+          </div>
+        </div>
+        <div class="fragment">
+          <p class="medium"><span class="cyan">MEMORY.md</span> &mdash; Memoria a largo plazo, persiste a trav&eacute;s de todas las sesiones (se cubre en detalle m&aacute;s adelante).</p>
+        </div>
+        <aside class="notes">
+          Desglosemos cada archivo. AGENTS.md es el prompt principal del sistema: le dice
+          al LLM qui&eacute;n es y c&oacute;mo comportarse. SOUL.md a&ntilde;ade sabor de personalidad:
+          &iquest;el agente es formal o casual? &iquest;Divertido o serio? TOOLS.md controla qu&eacute;
+          acciones puede realizar el agente. USER.md se crea autom&aacute;ticamente para cada
+          usuario y almacena contexto sobre ellos.
+        </aside>
+      </section>
+
+      <!-- Slide 5: Configuraci&oacute;n Multi-Agente -->
+      <section>
+        <h2>Configuraci&oacute;n Multi-Agente</h2>
+        <div class="mermaid">
+graph TB
+    GW[Gateway]
+    GW --> A1["🤖 Asistente<br/>Propósito General"]
+    GW --> A2["💻 Desarrollador<br/>Código y DevOps"]
+    GW --> A3["📊 Analista<br/>Datos e Informes"]
+    A1 --> W1["workspace/agents/asistente/"]
+    A2 --> W2["workspace/agents/desarrollador/"]
+    A3 --> W3["workspace/agents/analista/"]
+        </div>
+        <ul class="small fragment">
+          <li>Cada agente tiene su propio <span class="yellow">directorio de workspace</span></li>
+          <li>Enruta mensajes a agentes v&iacute;a <span class="cyan">configuraci&oacute;n de canal</span> o <span class="green">reglas de enrutamiento</span></li>
+          <li>Los agentes pueden tener diferentes <span class="purple">proveedores de LLM</span> y modelos</li>
+        </ul>
+        <aside class="notes">
+          Una configuraci&oacute;n t&iacute;pica podr&iacute;a tener un asistente de prop&oacute;sito general para
+          preguntas cotidianas, un agente desarrollador con herramientas de c&oacute;digo habilitadas,
+          y un agente analista con acceso a datos. Cada uno vive en su propio directorio de
+          workspace. Incluso puedes asignar diferentes modelos de LLM a cada agente: quiz&aacute;s
+          un modelo m&aacute;s econ&oacute;mico para el asistente y uno m&aacute;s capaz para el desarrollador.
+        </aside>
+      </section>
+
+      <!-- Slide 6: Sistema de Memoria -->
+      <section>
+        <h2>Sistema de Memoria</h2>
+        <p>Dos tipos de memoria mantienen a tu agente consciente del contexto:</p>
+        <div class="columns">
+          <div class="col">
+            <div class="highlight-box info fragment">
+              <strong>Notas Diarias</strong>
+              <ul>
+                <li>Memoria a corto plazo</li>
+                <li>Auto-generadas por conversaci&oacute;n</li>
+                <li>Capturan hechos y decisiones clave</li>
+                <li>Organizadas por fecha</li>
+                <li>Insumo para la compactaci&oacute;n a largo plazo</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box success fragment">
+              <strong>MEMORY.md</strong>
+              <ul>
+                <li>Memoria a largo plazo</li>
+                <li>Persistente a trav&eacute;s de todas las sesiones</li>
+                <li>Compactada desde las notas diarias</li>
+                <li>Contiene preferencias del usuario, hechos importantes</li>
+                <li>Se carga en cada nueva sesi&oacute;n</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          El sistema de memoria es lo que hace que los agentes de OpenClaw se sientan como
+          si realmente te conocieran con el tiempo. Las notas diarias son la materia prima:
+          despu&eacute;s de cada conversaci&oacute;n, se extrae informaci&oacute;n clave y se guarda. MEMORY.md
+          es la memoria destilada a largo plazo que se carga en cada nueva sesi&oacute;n.
+        </aside>
+      </section>
+
+      <!-- Slide 7: Flujo de Memoria -->
+      <section>
+        <h2>Flujo de Memoria</h2>
+        <div class="mermaid">
+graph LR
+    CONV["Conversación"] --> DN["Notas Diarias<br/>Auto-guardadas"]
+    DN --> COMP["Compactación"]
+    COMP --> MEM["MEMORY.md<br/>Largo plazo"]
+    MEM --> NEXT["Siguiente Sesión<br/>Contexto"]
+        </div>
+        <div class="fragment">
+          <h3>C&oacute;mo Funciona la Compactaci&oacute;n</h3>
+          <ul class="medium">
+            <li>Las notas diarias se acumulan con el tiempo</li>
+            <li>El proceso de compactaci&oacute;n extrae los <span class="yellow">hechos importantes</span></li>
+            <li>Elimina informaci&oacute;n redundante u obsoleta</li>
+            <li>Actualiza <span class="cyan">MEMORY.md</span> con el conocimiento destilado</li>
+          </ul>
+        </div>
+        <div class="highlight-box warning fragment">
+          <strong>Resultado:</strong> Tu agente recuerda que prefieres el modo oscuro,
+          que tu gato se llama Luna y que est&aacute;s trabajando en un proyecto en Python &mdash;
+          sin releer cada conversaci&oacute;n pasada.
+        </div>
+        <aside class="notes">
+          El flujo es: ocurre la conversaci&oacute;n, las notas diarias capturan lo destacado,
+          la compactaci&oacute;n los destila en MEMORY.md. La pr&oacute;xima vez que se inicie una
+          sesi&oacute;n, MEMORY.md se carga como contexto. Esto significa que el agente comienza
+          cada conversaci&oacute;n ya sabiendo las cosas importantes sobre ti. El paso de
+          compactaci&oacute;n es crucial: previene que la memoria crezca sin l&iacute;mites.
+        </aside>
+      </section>
+
+      <!-- Slide 8: Sesiones Explicadas -->
+      <section>
+        <h2>Sesiones Explicadas</h2>
+        <div class="highlight-box info">
+          <strong>Sesi&oacute;n</strong> = un hilo de conversaci&oacute;n entre un usuario y un agente.
+        </div>
+        <ul>
+          <li class="fragment"><span class="cyan">Creada</span> cuando un usuario env&iacute;a un nuevo mensaje</li>
+          <li class="fragment"><span class="green">Activa</span> mientras la conversaci&oacute;n est&aacute; en curso</li>
+          <li class="fragment"><span class="yellow">Inactiva</span> cuando no hay actividad durante un per&iacute;odo configurado</li>
+          <li class="fragment"><span class="red">Expirada</span> cuando se alcanza el timeout de inactividad</li>
+        </ul>
+        <div class="highlight-box success fragment">
+          <strong>&iquest;Por qu&eacute; importan las sesiones?</strong> Gestionan el contexto de la
+          conversaci&oacute;n, controlan el uso de memoria y habilitan la compactaci&oacute;n del
+          historial cuando las conversaciones se vuelven demasiado largas.
+        </div>
+        <aside class="notes">
+          Las sesiones son el contenedor de las conversaciones. Rastrean el historial
+          de mensajes, gestionan la ventana de contexto y determinan cu&aacute;ndo compactar
+          el historial. Sin gesti&oacute;n de sesiones, las conversaciones largas exceder&iacute;an
+          el l&iacute;mite de contexto del LLM y fallar&iacute;an o perder&iacute;an contexto importante.
+        </aside>
+      </section>
+
+      <!-- Slide 9: Diagrama de Estado de Sesi&oacute;n -->
+      <section>
+        <h2>Ciclo de Vida de una Sesi&oacute;n</h2>
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> Creada: Nuevo mensaje
+    Creada --> Activa: Procesando
+    Activa --> Inactiva: Sin actividad
+    Inactiva --> Activa: Nuevo mensaje
+    Inactiva --> Expirada: Timeout
+    Expirada --> [*]: Limpieza
+    Activa --> Compactada: Historial muy largo
+    Compactada --> Activa: Continuar
+        </div>
+        <p class="small fragment">Las sesiones gestionan autom&aacute;ticamente su propio ciclo de vida &mdash; no se necesita limpieza manual.</p>
+        <aside class="notes">
+          El diagrama de estado muestra c&oacute;mo transicionan las sesiones. Las transiciones
+          clave a entender: Activa a Compactada ocurre cuando el historial de la
+          conversaci&oacute;n excede el m&aacute;ximo configurado. Durante la compactaci&oacute;n, los mensajes
+          m&aacute;s antiguos se resumen y se reemplazan con una versi&oacute;n condensada. Inactiva a
+          Expirada ocurre despu&eacute;s del timeout configurado, momento en el cual se generan
+          las notas diarias y se limpia la sesi&oacute;n.
+        </aside>
+      </section>
+
+      <!-- Slide 10: Configuraci&oacute;n de Sesiones -->
+      <section>
+        <h2>Configuraci&oacute;n de Sesiones</h2>
+        <pre><code class="language-json5" data-trim>
+{
+  sessions: {
+    // Tiempo antes de que una sesi&oacute;n inactiva expire
+    idleTimeout: "30m",
+
+    // M&aacute;ximo de mensajes antes de activar la compactaci&oacute;n
+    maxHistory: 50,
+
+    // C&oacute;mo resumir mensajes antiguos
+    compaction: {
+      strategy: "summarize",
+      keepRecent: 10,
+      summaryModel: "fast"
+    },
+
+    // Generaci&oacute;n de notas diarias
+    dailyNotes: {
+      enabled: true,
+      extractFacts: true
+    }
+  }
+}
+        </code></pre>
+        <div class="highlight-box info fragment">
+          <strong>Consejo:</strong> Un <code>maxHistory</code> m&aacute;s bajo ahorra tokens pero puede perder contexto.
+          Comienza con <span class="yellow">50</span> y ajusta seg&uacute;n tu uso.
+        </div>
+        <aside class="notes">
+          Aqu&iacute; hay una configuraci&oacute;n t&iacute;pica de sesiones. idleTimeout controla cu&aacute;nto tiempo
+          una sesi&oacute;n permanece activa sin mensajes. maxHistory determina cu&aacute;ndo se activa
+          la compactaci&oacute;n. La estrategia de compactaci&oacute;n &quot;summarize&quot; usa el LLM para
+          crear un resumen de mensajes antiguos mientras keepRecent preserva los &uacute;ltimos
+          N mensajes de forma literal. dailyNotes controla si el sistema extrae hechos
+          autom&aacute;ticamente despu&eacute;s de cada sesi&oacute;n.
+        </aside>
+      </section>
+
+      <!-- Slide 11: Conclusiones Clave -->
+      <section>
+        <h2>Conclusiones Clave</h2>
+        <div class="highlight-box success fragment">
+          <strong>1. Los agentes son personalidades de IA aisladas</strong><br>
+          Cada agente tiene su propio espacio de trabajo, herramientas y memoria. No comparten contexto.
+        </div>
+        <div class="highlight-box info fragment">
+          <strong>2. La memoria persiste entre sesiones</strong><br>
+          Las notas diarias capturan contexto a corto plazo. MEMORY.md proporciona continuidad a largo plazo.
+        </div>
+        <div class="highlight-box warning fragment">
+          <strong>3. Las sesiones tienen gesti&oacute;n de ciclo de vida</strong><br>
+          Compactaci&oacute;n autom&aacute;tica, timeouts de inactividad y limpieza mantienen todo funcionando sin problemas.
+        </div>
+        <aside class="notes">
+          Tres cosas para recordar: los agentes est&aacute;n aislados por dise&ntilde;o, lo cual es una
+          caracter&iacute;stica, no una limitaci&oacute;n. La memoria le da continuidad a tu agente entre
+          sesiones, as&iacute; que genuinamente aprende sobre ti con el tiempo. Y la gesti&oacute;n de
+          sesiones maneja la complejidad de conversaciones largas autom&aacute;ticamente. En la
+          pr&oacute;xima sesi&oacute;n cubriremos herramientas y skills, que les dan a tus agentes la
+          capacidad de actuar en el mundo real.
+        </aside>
+      </section>
+
+      <!-- Slide 12: Recursos -->
+      <section>
+        <h2>Recursos</h2>
+        <ul>
+          <li><a href="https://openclaw.com/docs/agents">Documentaci&oacute;n de Configuraci&oacute;n de Agentes</a></li>
+          <li><a href="https://openclaw.com/docs/agents/multi-agent">Gu&iacute;a de Configuraci&oacute;n Multi-Agente</a></li>
+          <li><a href="https://openclaw.com/docs/memory">Documentaci&oacute;n del Sistema de Memoria</a></li>
+          <li><a href="https://openclaw.com/docs/sessions">Referencia de Gesti&oacute;n de Sesiones</a></li>
+          <li><a href="https://openclaw.com/docs/agents/personality">Gu&iacute;a de Archivos de Personalidad</a></li>
+          <li><a href="https://openclaw.com/docs/memory/compaction">Estrategias de Compactaci&oacute;n</a></li>
+        </ul>
+        <div class="highlight-box info">
+          <strong>Pr&oacute;xima sesi&oacute;n:</strong> Herramientas y Skills &mdash; extendiendo tus agentes con
+          capacidades del mundo real.
+        </div>
+        <aside class="notes">
+          Aqu&iacute; est&aacute;n los enlaces de documentaci&oacute;n relevantes para lectura adicional.
+          La Sesi&oacute;n 5 cubre herramientas y skills, donde veremos c&oacute;mo darle a tus
+          agentes la capacidad de ejecutar c&oacute;digo, llamar APIs, gestionar archivos
+          y m&aacute;s. Ah&iacute; es donde OpenClaw se convierte verdaderamente en una poderosa
+          plataforma de automatizaci&oacute;n personal.
+        </aside>
+      </section>
+
+    </div>
+  </div>
+  <div class="nav-footer">
+    <a href="index.html">&larr; Tabla de Contenidos</a> &middot; Sesi&oacute;n 4 de 6
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+    Reveal.initialize({
+      hash: true,
+      slideNumber: true,
+      plugins: [RevealHighlight, RevealNotes],
+    }).then(() => {
+      mermaid.run({ querySelector: '.mermaid' });
+      Reveal.on('slidechanged', () => { mermaid.run({ querySelector: '.mermaid' }); });
+    });
+  </script>
+</body>
+</html>

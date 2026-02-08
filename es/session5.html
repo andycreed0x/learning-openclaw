@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Herramientas, Skills y Sandbox - Learning OpenClaw</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+  <link rel="stylesheet" href="../assets/custom.css">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- Diapositiva 1: Portada -->
+      <section>
+        <span class="session-badge">Sesi&oacute;n 5 de 6</span>
+        <h1>Herramientas, Skills y Sandbox</h1>
+        <pre class="ascii-art">
+  ___                    ____ _
+ / _ \ _ __   ___ _ __ / ___| | __ ___      __
+| | | | '_ \ / _ \ '_ \ |   | |/ _` \ \ /\ / /
+| |_| | |_) |  __/ | | | |___| | (_| |\ V  V /
+ \___/| .__/ \___|_| |_|\____|_|\__,_| \_/\_/
+      |_|
+        </pre>
+        <p class="medium">Extendiendo las capacidades de tus agentes</p>
+        <aside class="notes">
+          Bienvenidos a la Sesi&oacute;n 5. En esta sesi&oacute;n exploraremos c&oacute;mo las herramientas,
+          los skills y el sandbox ampl&iacute;an las capacidades de los agentes de OpenClaw.
+          Veremos c&oacute;mo los agentes pueden interactuar con el mundo real de manera segura.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 2: Qu&eacute; son las Herramientas -->
+      <section>
+        <h2>&iquest;Qu&eacute; son las Herramientas?</h2>
+        <p class="medium">Las herramientas extienden lo que los agentes pueden hacer <span class="cyan">m&aacute;s all&aacute; de la conversaci&oacute;n</span></p>
+        <div class="columns" style="margin-top: 20px;">
+          <div class="col">
+            <div class="highlight-box info fragment">
+              <strong class="blue">Sin herramientas</strong><br>
+              El agente solo puede responder con texto basado en su conocimiento del modelo.
+            </div>
+            <div class="highlight-box success fragment">
+              <strong class="green">Con herramientas</strong><br>
+              El agente puede navegar la web, leer archivos, ejecutar c&oacute;digo, enviar notificaciones y mucho m&aacute;s.
+            </div>
+          </div>
+          <div class="col">
+            <pre class="ascii-art fragment">
+ Sin herramientas:
+ Usuario: "Lee mi email"
+ Agente:  "No puedo hacer eso"
+
+ Con herramientas:
+ Usuario: "Lee mi email"
+ Agente:  [usa herramienta IMAP]
+ Agente:  "Tienes 3 emails nuevos..."
+            </pre>
+          </div>
+        </div>
+        <aside class="notes">
+          Las herramientas son el puente entre la inteligencia del agente y el mundo real.
+          Sin herramientas, un agente solo puede generar texto. Con herramientas,
+          puede interactuar con servicios externos, el sistema de archivos,
+          la web y mucho m&aacute;s. Esto es lo que convierte a un chatbot en un verdadero asistente.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 3: Categor&iacute;as de Herramientas -->
+      <section>
+        <h2>Categor&iacute;as de Herramientas</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Categor&iacute;a</th>
+              <th>Descripci&oacute;n</th>
+              <th>Ejemplos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="fragment">
+              <td><span class="blue">Navegador</span></td>
+              <td>Navegaci&oacute;n web y scraping</td>
+              <td>Navegar, captura, extraer</td>
+            </tr>
+            <tr class="fragment">
+              <td><span class="purple">Canvas</span></td>
+              <td>Creaci&oacute;n de contenido visual</td>
+              <td>Dibujar, generar im&aacute;genes</td>
+            </tr>
+            <tr class="fragment">
+              <td><span class="green">Node</span></td>
+              <td>Operaciones del sistema</td>
+              <td>Leer/escribir archivos, HTTP</td>
+            </tr>
+            <tr class="fragment">
+              <td><span class="yellow">Cron</span></td>
+              <td>Tareas programadas</td>
+              <td>Recordatorios, chequeos peri&oacute;dicos</td>
+            </tr>
+            <tr class="fragment">
+              <td><span class="cyan">Webhooks</span></td>
+              <td>Endpoints HTTP</td>
+              <td>Recibir triggers externos</td>
+            </tr>
+            <tr class="fragment">
+              <td><span class="red">Exec</span></td>
+              <td>Ejecuci&oacute;n de c&oacute;digo</td>
+              <td>Ejecutar scripts, comandos</td>
+            </tr>
+          </tbody>
+        </table>
+        <aside class="notes">
+          OpenClaw organiza sus herramientas en seis categor&iacute;as principales.
+          La herramienta de Navegador permite la navegaci&oacute;n web automatizada.
+          Canvas permite crear contenido visual. Node maneja operaciones del sistema
+          como archivos y solicitudes HTTP. Cron gestiona tareas programadas.
+          Webhooks recibe solicitudes externas. Y Exec ejecuta c&oacute;digo y comandos del sistema.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 4: Flujo de Ejecuci&oacute;n de Herramientas -->
+      <section>
+        <h2>Flujo de Ejecuci&oacute;n de Herramientas</h2>
+        <div class="mermaid">
+graph TB
+    A["El agente recibe solicitud"] --> D{"&iquest;Necesita herramienta?"}
+    D -->|"No"| R["Respuesta directa"]
+    D -->|"S&iacute;"| T["Seleccionar herramienta"]
+    T --> S{"&iquest;Sandbox activado?"}
+    S -->|"S&iacute;"| SB["Ejecutar en sandbox"]
+    S -->|"No"| EX["Ejecutar directamente"]
+    SB --> RES["Resultado"]
+    EX --> RES
+    RES --> A2["Agente procesa resultado"]
+    A2 --> RESP["Respuesta final"]
+        </div>
+        <div class="highlight-box info fragment" style="margin-top: 15px;">
+          <strong>El agente decide aut&oacute;nomamente</strong> si necesita una herramienta y cu&aacute;l usar,
+          basado en la solicitud del usuario y las herramientas disponibles.
+        </div>
+        <aside class="notes">
+          Este diagrama muestra el flujo completo de ejecuci&oacute;n de herramientas.
+          Cuando el agente recibe una solicitud, primero decide si necesita una herramienta.
+          Si no la necesita, responde directamente. Si la necesita, selecciona la herramienta
+          apropiada. Luego, dependiendo de la configuraci&oacute;n del sandbox, la herramienta
+          se ejecuta en un entorno aislado o directamente. El resultado vuelve al agente
+          para componer la respuesta final.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 5: Herramienta Navegador en Detalle -->
+      <section>
+        <h2>Herramienta Navegador en Detalle</h2>
+        <p class="medium">Chromium headless v&iacute;a <span class="cyan">Puppeteer</span></p>
+        <div class="columns" style="margin-top: 15px;">
+          <div class="col">
+            <ul>
+              <li class="fragment"><span class="green">Navegar</span> a cualquier URL</li>
+              <li class="fragment"><span class="green">Capturar pantalla</span> de p&aacute;ginas completas</li>
+              <li class="fragment"><span class="green">Hacer clic</span> en elementos espec&iacute;ficos</li>
+              <li class="fragment"><span class="green">Rellenar formularios</span> autom&aacute;ticamente</li>
+              <li class="fragment"><span class="green">Extraer contenido</span> estructurado</li>
+              <li class="fragment"><span class="green">Esperar</span> elementos din&aacute;micos</li>
+            </ul>
+          </div>
+          <div class="col">
+            <pre class="fragment"><code class="language-json5">// Ejemplo de uso por el agente
+{
+  tool: "browser",
+  action: "navigate",
+  url: "https://ejemplo.com",
+  // El agente puede encadenar acciones:
+  // navegar -> extraer -> capturar
+}</code></pre>
+          </div>
+        </div>
+        <div class="highlight-box warning fragment" style="margin-top: 15px;">
+          <strong class="yellow">Nota:</strong> El navegador se ejecuta en modo headless.
+          No se abre una ventana visible &mdash; todo sucede en segundo plano.
+        </div>
+        <aside class="notes">
+          La herramienta de navegador es una de las m&aacute;s potentes. Utiliza Puppeteer para
+          controlar un navegador Chromium headless. Puede navegar a cualquier URL,
+          tomar capturas de pantalla, interactuar con elementos de la p&aacute;gina como
+          clics y formularios, y extraer contenido. Todo esto ocurre en segundo plano
+          sin interfaz visual, lo que lo hace perfecto para automatizaci&oacute;n.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 6: Herramienta Exec -->
+      <section>
+        <h2>Herramienta Exec</h2>
+        <p class="medium">Ejecutar comandos del sistema de forma controlada</p>
+        <div class="columns" style="margin-top: 15px;">
+          <div class="col">
+            <div class="highlight-box success fragment">
+              <strong class="green">Capacidades</strong><br>
+              <ul>
+                <li>Ejecutar comandos del sistema</li>
+                <li>Comandos permitidos configurables</li>
+                <li>Aislamiento sandbox disponible</li>
+                <li>Timeout configurable</li>
+              </ul>
+            </div>
+            <div class="highlight-box warning fragment">
+              <strong class="yellow">Precauci&oacute;n</strong><br>
+              Siempre usa sandbox en producci&oacute;n. Limita los comandos permitidos al m&iacute;nimo necesario.
+            </div>
+          </div>
+          <div class="col">
+            <pre class="fragment"><code class="language-json5">// openclaw.json5
+{
+  tools: {
+    exec: {
+      enabled: true,
+      // Lista blanca de comandos
+      allowedCommands: [
+        "ls", "cat", "grep",
+        "curl", "node", "python3"
+      ],
+      // Timeout en milisegundos
+      timeout: 30000,
+      // Forzar sandbox
+      sandbox: true
+    }
+  }
+}</code></pre>
+          </div>
+        </div>
+        <aside class="notes">
+          La herramienta Exec permite al agente ejecutar comandos del sistema operativo.
+          Es muy potente pero tambi&eacute;n potencialmente peligrosa, por eso es crucial configurarla
+          correctamente. Puedes definir una lista blanca de comandos permitidos, establecer
+          un timeout y forzar la ejecuci&oacute;n en sandbox. En producci&oacute;n, siempre deber&iacute;as
+          limitar los comandos al m&iacute;nimo necesario y activar el sandbox.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 7: Qu&eacute; son los Skills -->
+      <section>
+        <h2>&iquest;Qu&eacute; son los Skills?</h2>
+        <p class="medium">Paquetes reutilizables de <span class="cyan">prompt + herramienta</span></p>
+        <div class="columns" style="margin-top: 20px;">
+          <div class="col">
+            <div class="highlight-box info fragment">
+              <strong class="blue">Piensa en ellos como "apps"</strong><br>
+              Cada skill combina instrucciones (prompt) con capacidades (herramientas) para
+              resolver una tarea espec&iacute;fica de forma empaquetada y reutilizable.
+            </div>
+            <div class="highlight-box success fragment">
+              <strong class="green">Ejemplo: Skill "resumen"</strong><br>
+              <strong>Prompt:</strong> "Resume el contenido de la URL proporcionada"<br>
+              <strong>Herramienta:</strong> Navegador (para leer la p&aacute;gina)<br>
+              <strong>Resultado:</strong> Resumen estructurado del contenido
+            </div>
+          </div>
+          <div class="col">
+            <pre class="fragment"><code class="language-json5">// Ejemplo de skill personalizado
+// /workspace/skills/traducir.json5
+{
+  name: "traducir",
+  description: "Traduce texto entre idiomas",
+  prompt: `Eres un traductor profesional.
+    Traduce el texto proporcionado
+    al idioma solicitado.
+    Mantén el tono y estilo original.`,
+  tools: ["exec"],
+  // Activar por palabra clave
+  trigger: "/traducir"
+}</code></pre>
+          </div>
+        </div>
+        <aside class="notes">
+          Los skills son uno de los conceptos m&aacute;s potentes de OpenClaw. Piensa en ellos como
+          aplicaciones para tu agente. Cada skill empaqueta un prompt espec&iacute;fico con las
+          herramientas necesarias para resolver una tarea concreta. Por ejemplo, el skill
+          de resumen combina un prompt de instrucciones con la herramienta de navegador
+          para leer y resumir p&aacute;ginas web. Puedes crear tus propios skills f&aacute;cilmente.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 8: Fuentes de Skills -->
+      <section>
+        <h2>Fuentes de Skills</h2>
+        <p class="medium">&iquest;De d&oacute;nde vienen los skills?</p>
+        <pre class="ascii-art">
+&boxdr;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxdl;
+&boxv;        Fuentes de Skills            &boxv;
+&boxvr;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxhu;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxhu;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxvl;
+&boxv;  Incluidos   &boxv; Workspace&boxv;  ClawHub  &boxv;
+&boxv;  (built-in)  &boxv;(personal)&boxv;(comunidad)&boxv;
+&boxv;              &boxv;          &boxv;           &boxv;
+&boxv; &bull; resumen    &boxv; Tus      &boxv; Explorar  &boxv;
+&boxv; &bull; traducir   &boxv; propios  &boxv; e instalar&boxv;
+&boxv; &bull; buscar-web &boxv; skills en&boxv; skills    &boxv;
+&boxv; &bull; ...        &boxv; /skills  &boxv; compartidos&boxv;
+&boxdr;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxhu;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxhu;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxh;&boxdl;
+        </pre>
+        <div class="columns fragment" style="margin-top: 15px;">
+          <div class="col">
+            <div class="highlight-box info">
+              <strong class="blue">Incluidos:</strong> Vienen con OpenClaw. Listos para usar desde el primer momento.
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box success">
+              <strong class="green">Workspace:</strong> Crea tus propios skills en la carpeta <code>/workspace/skills/</code>.
+            </div>
+          </div>
+        </div>
+        <div class="highlight-box warning fragment" style="margin-top: 10px;">
+          <strong class="yellow">ClawHub:</strong> Repositorio comunitario donde puedes explorar, compartir e instalar skills creados por otros usuarios.
+        </div>
+        <aside class="notes">
+          Los skills pueden venir de tres fuentes. Los skills incluidos o built-in vienen
+          con OpenClaw y est&aacute;n listos para usar, como resumen, traducir y buscar-web.
+          Los skills de workspace son los que t&uacute; creas en tu carpeta de workspace.
+          Y ClawHub es el repositorio comunitario donde puedes encontrar e instalar
+          skills compartidos por otros usuarios. Es como un marketplace de habilidades
+          para tu agente.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 9: Modos de Sandbox -->
+      <section>
+        <h2>Modos de Sandbox</h2>
+        <p class="medium">Controla el nivel de aislamiento de la ejecuci&oacute;n</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Modo</th>
+              <th>Descripci&oacute;n</th>
+              <th>Seguridad</th>
+              <th>Uso recomendado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="fragment">
+              <td><code class="red">off</code></td>
+              <td>Sin sandbox</td>
+              <td><span class="red">Baja</span></td>
+              <td>Solo desarrollo local</td>
+            </tr>
+            <tr class="fragment">
+              <td><code class="yellow">non-main</code></td>
+              <td>Sandbox para agentes no principales</td>
+              <td><span class="yellow">Media</span></td>
+              <td>Uso personal controlado</td>
+            </tr>
+            <tr class="fragment">
+              <td><code class="green">all</code></td>
+              <td>Sandbox para todo</td>
+              <td><span class="green">Alta</span></td>
+              <td>Producci&oacute;n y multi-usuario</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="highlight-box warning fragment" style="margin-top: 20px;">
+          <strong class="yellow">Recomendaci&oacute;n:</strong> Usa el modo <code>all</code> siempre que sea posible.
+          El modo <code>off</code> solo debe usarse durante el desarrollo, nunca en producci&oacute;n.
+        </div>
+        <aside class="notes">
+          El sandbox tiene tres modos de operaci&oacute;n. El modo off desactiva el sandbox por completo,
+          lo que significa que las herramientas se ejecutan con acceso completo al sistema.
+          Esto solo es apropiado para desarrollo local. El modo non-main aplica sandbox
+          solo a los agentes que no son el principal, &uacute;til cuando confias en tu agente
+          principal pero no en los secundarios. El modo all aplica sandbox a toda ejecuci&oacute;n,
+          y es lo recomendado para producci&oacute;n y entornos multi-usuario.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 10: Arquitectura del Sandbox -->
+      <section>
+        <h2>Arquitectura del Sandbox</h2>
+        <p class="medium">Aislamiento mediante <span class="cyan">isolated-vm</span></p>
+        <div class="mermaid">
+graph TB
+    subgraph "Proceso Principal"
+        AG["Agente"]
+    end
+    subgraph "Sandbox (isolated-vm)"
+        EX["Ejecuci&oacute;n de C&oacute;digo"]
+        FS["Acceso FS Limitado"]
+        NET["Restricciones de Red"]
+    end
+    AG -->|"llamada aislada"| EX
+    EX -->|"resultado"| AG
+        </div>
+        <div class="columns fragment" style="margin-top: 15px;">
+          <div class="col">
+            <div class="highlight-box success">
+              <strong class="green">Dentro del sandbox</strong><br>
+              <ul>
+                <li>Memoria limitada</li>
+                <li>CPU con timeout</li>
+                <li>FS restringido a workspace</li>
+                <li>Red filtrada</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box">
+              <strong class="red">Fuera del sandbox</strong><br>
+              <ul>
+                <li>Acceso completo a memoria</li>
+                <li>Sin l&iacute;mites de CPU</li>
+                <li>FS completo</li>
+                <li>Red sin restricciones</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          La arquitectura del sandbox utiliza isolated-vm para crear un entorno de ejecuci&oacute;n
+          completamente aislado. Dentro del sandbox, el c&oacute;digo tiene memoria limitada,
+          un timeout de CPU, acceso al sistema de archivos restringido solo al workspace,
+          y conexiones de red filtradas. Esto significa que incluso si un agente intenta
+          ejecutar c&oacute;digo malicioso o una inyecci&oacute;n de prompt logra manipular al agente,
+          el da&ntilde;o est&aacute; contenido dentro del sandbox.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 11: Conclusiones Clave -->
+      <section>
+        <h2>Conclusiones Clave</h2>
+        <div class="highlight-box success fragment" style="margin-top: 20px;">
+          <strong class="green">Las herramientas dan capacidades del mundo real</strong><br>
+          Navegador, Exec, Cron, Webhooks y m&aacute;s &mdash; tus agentes pueden interactuar con servicios
+          externos, el sistema de archivos y la web.
+        </div>
+        <div class="highlight-box info fragment">
+          <strong class="blue">Los Skills son paquetes reutilizables</strong><br>
+          Combinan prompts y herramientas en unidades empaquetadas. Crea los tuyos o instala
+          desde ClawHub.
+        </div>
+        <div class="highlight-box warning fragment">
+          <strong class="yellow">El Sandbox protege tu sistema</strong><br>
+          Aislamiento con isolated-vm. Tres niveles de seguridad. Siempre usa <code>all</code> en producci&oacute;n.
+        </div>
+        <div class="fragment" style="margin-top: 25px;">
+          <pre class="ascii-art">
+  Herramientas + Skills + Sandbox
+  = Agentes potentes Y seguros
+          </pre>
+        </div>
+        <aside class="notes">
+          Recapitulemos los puntos clave de esta sesi&oacute;n. Las herramientas transforman a los
+          agentes de simples chatbots a asistentes capaces de interactuar con el mundo real.
+          Los skills empaquetan esas capacidades de forma reutilizable. Y el sandbox asegura
+          que todo esto ocurra de forma segura. La combinaci&oacute;n de estos tres elementos es
+          lo que hace de OpenClaw una plataforma potente y segura.
+        </aside>
+      </section>
+
+      <!-- Diapositiva 12: Recursos -->
+      <section>
+        <h2>Recursos</h2>
+        <div class="highlight-box info">
+          <strong class="blue">ClawHub &mdash; Repositorio de Skills</strong><br>
+          <a href="https://clawhub.openclaw.ai" target="_blank">clawhub.openclaw.ai</a>
+          &mdash; Explora, comparte e instala skills de la comunidad
+        </div>
+        <div class="highlight-box success">
+          <strong class="green">Documentaci&oacute;n de Skills</strong><br>
+          <a href="https://docs.openclaw.ai/skills" target="_blank">docs.openclaw.ai/skills</a>
+          &mdash; Gu&iacute;a completa para crear y gestionar skills
+        </div>
+        <div class="highlight-box warning">
+          <strong class="yellow">Documentaci&oacute;n de Herramientas</strong><br>
+          <a href="https://docs.openclaw.ai/tools" target="_blank">docs.openclaw.ai/tools</a>
+          &mdash; Referencia de todas las herramientas disponibles
+        </div>
+        <div class="fragment" style="margin-top: 30px;">
+          <p class="medium">
+            Siguiente: <strong class="cyan">Sesi&oacute;n 6 &mdash; Instalaci&oacute;n, Configuraci&oacute;n y Seguridad</strong>
+          </p>
+          <p class="small">
+            <a href="session6.html">Ir a la Sesi&oacute;n 6 &rarr;</a>
+          </p>
+        </div>
+        <aside class="notes">
+          Aqu&iacute; tienen los recursos principales sobre herramientas y skills.
+          ClawHub es el lugar donde explorar skills de la comunidad. La documentaci&oacute;n
+          de skills explica c&oacute;mo crear los tuyos propios. Y la referencia de herramientas
+          cubre todas las herramientas disponibles en detalle.
+          En la siguiente y &uacute;ltima sesi&oacute;n cubriremos la instalaci&oacute;n, configuraci&oacute;n y seguridad.
+        </aside>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <a href="index.html">&larr; Tabla de Contenidos</a> &middot; Sesi&oacute;n 5 de 6
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+    Reveal.initialize({
+      hash: true,
+      slideNumber: true,
+      plugins: [RevealHighlight, RevealNotes],
+    }).then(() => {
+      mermaid.run({ querySelector: '.mermaid' });
+      Reveal.on('slidechanged', () => { mermaid.run({ querySelector: '.mermaid' }); });
+    });
+  </script>
+</body>
+</html>

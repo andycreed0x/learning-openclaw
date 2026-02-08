@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Installation, Config & Security - Learning OpenClaw</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+  <link rel="stylesheet" href="../assets/custom.css">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- Slide 1: Title -->
+      <section>
+        <span class="session-badge">Session 6 of 6</span>
+        <h1>Installation, Config &amp; Security</h1>
+        <pre class="ascii-art">
+  ___                    ____ _
+ / _ \ _ __   ___ _ __ / ___| | __ ___      __
+| | | | '_ \ / _ \ '_ \ |   | |/ _` \ \ /\ / /
+| |_| | |_) |  __/ | | | |___| | (_| |\ V  V /
+ \___/| .__/ \___|_| |_|\____|_|\__,_| \_/\_/
+      |_|
+        </pre>
+        <p class="medium">From zero to a secure, production-ready deployment</p>
+        <aside class="notes">
+          Welcome to the final session of Learning OpenClaw. In this session we bring
+          everything together: how to install OpenClaw, how to configure it, and how to
+          secure it for production use. By the end, you will be ready to deploy your own
+          personal AI assistant.
+        </aside>
+      </section>
+
+      <!-- Slide 2: Installation Methods -->
+      <section>
+        <h2>Installation Methods</h2>
+        <p class="medium">Three ways to get started</p>
+        <div class="columns" style="margin-top: 20px;">
+          <div class="col">
+            <div class="highlight-box success fragment">
+              <strong class="green">npm (recommended)</strong><br>
+              <pre><code class="language-bash">npm install -g openclaw</code></pre>
+              <span class="small">Fastest way to get started. Requires Node.js.</span>
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box info fragment">
+              <strong class="blue">From Source</strong><br>
+              <pre><code class="language-bash">git clone https://github.com/openclaw/openclaw.git
+cd openclaw
+npm install
+npm run build</code></pre>
+              <span class="small">For contributors and custom builds.</span>
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box warning fragment">
+              <strong class="yellow">Docker</strong><br>
+              <pre><code class="language-bash">docker pull openclaw/openclaw</code></pre>
+              <span class="small">Isolated, reproducible deployments.</span>
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          There are three ways to install OpenClaw. The recommended method is via npm,
+          which gives you the global openclaw command. If you want to contribute or
+          customize the source, you can clone the repository and build from source.
+          And for isolated, reproducible deployments, Docker is available. All three
+          methods get you to the same result.
+        </aside>
+      </section>
+
+      <!-- Slide 3: Prerequisites -->
+      <section>
+        <h2>Prerequisites</h2>
+        <p class="medium">What you need before installing</p>
+        <div class="columns" style="margin-top: 20px;">
+          <div class="col">
+            <div class="highlight-box info fragment">
+              <strong class="blue">Node.js 20+</strong><br>
+              OpenClaw requires Node.js version 20 or higher. Download from
+              <a href="https://nodejs.org" target="_blank">nodejs.org</a>.
+            </div>
+            <div class="highlight-box info fragment">
+              <strong class="blue">npm 9+</strong><br>
+              Comes bundled with Node.js. Verify with <code>npm --version</code>.
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box warning fragment">
+              <strong class="yellow">At least one AI API key</strong><br>
+              You need a key from one of these providers:
+              <ul>
+                <li>OpenAI (<code>sk-...</code>)</li>
+                <li>Anthropic (<code>sk-ant-...</code>)</li>
+                <li>Google Gemini</li>
+                <li>Ollama (local &mdash; no key needed)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="highlight-box success fragment" style="margin-top: 10px;">
+          <strong class="green">Quick check:</strong>
+          <code>node --version</code> &rarr; v20+ &nbsp;&nbsp;|&nbsp;&nbsp;
+          <code>npm --version</code> &rarr; 9+
+        </div>
+        <aside class="notes">
+          Before installing, make sure you have Node.js version 20 or higher and npm
+          version 9 or higher. You will also need at least one AI provider API key.
+          If you want to run completely offline, Ollama is an option that does not
+          require an API key since it runs models locally on your machine.
+        </aside>
+      </section>
+
+      <!-- Slide 4: Onboarding Wizard -->
+      <section>
+        <h2>Onboarding Wizard</h2>
+        <p class="medium">First run experience</p>
+        <pre class="ascii-art" style="margin-top: 20px;">
+ $ openclaw
+
+   Welcome to OpenClaw!
+
+   Step 1: Choose AI Provider
+   &gt; OpenAI / Anthropic / Ollama / Other
+
+   Step 2: Enter API Key
+   &gt; sk-...
+
+   Step 3: Choose Channel
+   &gt; Web (default) / Telegram / WhatsApp
+
+   Step 4: Ready!
+   &gt; Gateway running on :18789
+   &gt; Web chat at http://localhost:3000
+        </pre>
+        <div class="highlight-box info fragment" style="margin-top: 15px;">
+          The onboarding wizard runs automatically on first launch. It guides you through
+          provider selection, API key configuration, and channel setup. You can reconfigure
+          anytime by editing <code>openclaw.json5</code>.
+        </div>
+        <aside class="notes">
+          When you run openclaw for the first time, the onboarding wizard walks you through
+          the initial setup. It asks you to choose an AI provider, enter your API key, and
+          select a messaging channel. Within a few minutes, you have a working AI assistant.
+          The wizard generates an openclaw.json5 configuration file that you can edit later.
+        </aside>
+      </section>
+
+      <!-- Slide 5: Configuration File -->
+      <section>
+        <h2>Configuration File</h2>
+        <p class="medium"><code>openclaw.json5</code> &mdash; the heart of your setup</p>
+        <pre><code class="language-json5">// openclaw.json5
+{
+  // Main configuration
+  gateway: {
+    port: 18789,
+    host: "0.0.0.0"
+  },
+
+  agents: {
+    default: {
+      model: "gpt-4o",
+      provider: "openai"
+    }
+  },
+
+  channels: {
+    web: { type: "web", port: 3000 }
+  }
+}</code></pre>
+        <div class="highlight-box success fragment" style="margin-top: 10px;">
+          <strong class="green">JSON5 format:</strong> Comments, trailing commas, unquoted keys &mdash;
+          human-friendly configuration.
+        </div>
+        <aside class="notes">
+          The configuration file uses JSON5 format, which is a superset of JSON that allows
+          comments, trailing commas, and unquoted keys. The three main sections are gateway
+          (network settings), agents (AI model configuration), and channels (messaging
+          interfaces). This is the minimal configuration needed to get started.
+        </aside>
+      </section>
+
+      <!-- Slide 6: Config Features -->
+      <section>
+        <h2>Config Features</h2>
+        <p class="medium">Powerful configuration capabilities</p>
+        <div class="columns" style="margin-top: 15px;">
+          <div class="col">
+            <div class="highlight-box info fragment">
+              <strong class="blue">JSON5 Format</strong><br>
+              Comments allowed! Trailing commas, unquoted keys.
+              Much more human-friendly than plain JSON.
+            </div>
+            <div class="highlight-box success fragment">
+              <strong class="green">Hot Reload on Save</strong><br>
+              Edit the config file and changes apply immediately.
+              No need to restart the gateway.
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box warning fragment">
+              <strong class="yellow">$include for Splitting Files</strong><br>
+              Split your config into multiple files:
+              <pre><code class="language-json5">agents: { $include: "./agents.json5" }</code></pre>
+            </div>
+            <div class="highlight-box fragment">
+              <strong class="red">Environment Variable Substitution</strong><br>
+              Reference env vars directly:
+              <pre><code class="language-json5">apiKey: "$OPENAI_API_KEY"</code></pre>
+              Never hardcode secrets in your config.
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          OpenClaw configuration has several powerful features. JSON5 means you can add
+          comments to document your config. Hot reload means changes are picked up automatically
+          without restarting. The $include directive lets you split large configs into multiple
+          files. And environment variable substitution with the dollar sign prefix means you
+          never need to hardcode API keys or secrets in your configuration file.
+        </aside>
+      </section>
+
+      <!-- Slide 7: Security Overview -->
+      <section>
+        <h2>Security Overview</h2>
+        <p class="medium">Multiple layers of protection</p>
+        <div class="mermaid">
+graph TB
+    subgraph "Security Layers"
+        DM["DM Policies<br/>Who can talk?"]
+        SB["Sandbox<br/>Code isolation"]
+        PI["Prompt Injection<br/>Awareness"]
+        AC["Access Control<br/>Tool permissions"]
+    end
+    DM --> SB --> PI --> AC
+        </div>
+        <div class="highlight-box info fragment" style="margin-top: 15px;">
+          Security in OpenClaw is <strong class="blue">defense in depth</strong> &mdash;
+          multiple independent layers work together to protect your system, your data,
+          and your users.
+        </div>
+        <aside class="notes">
+          OpenClaw takes a defense-in-depth approach to security. There are four main layers.
+          DM Policies control who can interact with your agent. The Sandbox isolates tool
+          execution. Prompt Injection awareness helps prevent manipulation attacks. And Access
+          Control restricts which tools each agent can use. These layers work independently,
+          so even if one is bypassed, the others continue to protect your system.
+        </aside>
+      </section>
+
+      <!-- Slide 8: DM Policies Recap -->
+      <section>
+        <h2>DM Policies Recap</h2>
+        <p class="medium">Control who can talk to your agent</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Policy</th>
+              <th>Behavior</th>
+              <th>Best For</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="fragment">
+              <td><code class="green">pairing</code></td>
+              <td>New users must send a pairing code</td>
+              <td>Personal use, high security</td>
+            </tr>
+            <tr class="fragment">
+              <td><code class="blue">allowlist</code></td>
+              <td>Only pre-approved users can chat</td>
+              <td>Small teams, known users</td>
+            </tr>
+            <tr class="fragment">
+              <td><code class="yellow">open</code></td>
+              <td>Anyone can chat with the agent</td>
+              <td>Public bots, demos</td>
+            </tr>
+            <tr class="fragment">
+              <td><code class="red">disabled</code></td>
+              <td>No DM conversations allowed</td>
+              <td>Group-only bots</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="highlight-box warning fragment" style="margin-top: 15px;">
+          <strong class="yellow">Recommendation:</strong> Use <code>pairing</code> mode for personal assistants.
+          It requires a one-time pairing code, ensuring only you can access the agent.
+        </div>
+        <aside class="notes">
+          DM Policies are your first line of defense. Pairing mode requires users to enter
+          a code before they can start chatting, making it ideal for personal use. Allowlist
+          mode lets you predefine which users can access the agent. Open mode allows anyone
+          to chat, which is useful for public-facing bots. And disabled mode prevents DM
+          conversations entirely, restricting the agent to group chats only.
+        </aside>
+      </section>
+
+      <!-- Slide 9: Prompt Injection Awareness -->
+      <section>
+        <h2>Prompt Injection Awareness</h2>
+        <p class="medium">Protecting against manipulation attacks</p>
+        <div class="columns" style="margin-top: 15px;">
+          <div class="col">
+            <div class="highlight-box fragment">
+              <strong class="red">What is prompt injection?</strong><br>
+              An attacker crafts input that manipulates the agent into ignoring its
+              instructions and performing unintended actions.
+            </div>
+            <div class="highlight-box info fragment">
+              <strong class="blue">Built-in protections</strong><br>
+              <ul>
+                <li>System prompt isolation</li>
+                <li>Tool call validation</li>
+                <li>Output filtering</li>
+                <li>Sandbox isolation for exec tools</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box warning fragment">
+              <strong class="yellow">User awareness recommendations</strong><br>
+              <ul>
+                <li>Restrict tool permissions to the minimum needed</li>
+                <li>Enable sandbox mode in production</li>
+                <li>Review agent logs regularly</li>
+                <li>Use allowlist DM policies when possible</li>
+                <li>Be cautious with tools that access external content</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          Prompt injection is a serious concern for any AI assistant that can take actions.
+          An attacker could craft input designed to make the agent bypass its instructions
+          and execute harmful commands. OpenClaw includes built-in protections like system
+          prompt isolation and tool call validation. However, no protection is perfect, so
+          it is important to follow best practices: restrict tool permissions, enable
+          sandboxing, review logs, and use strict DM policies.
+        </aside>
+      </section>
+
+      <!-- Slide 10: Doctor Diagnostic Tool -->
+      <section>
+        <h2>Doctor Diagnostic Tool</h2>
+        <p class="medium"><code>openclaw doctor</code> &mdash; health check for your setup</p>
+        <pre class="ascii-art" style="margin-top: 15px;">
+ $ openclaw doctor
+
+ OpenClaw Doctor v1.x.x
+
+ Checking configuration...
+   [PASS] openclaw.json5 found and valid
+   [PASS] JSON5 syntax OK
+
+ Checking AI providers...
+   [PASS] OpenAI API key configured
+   [PASS] OpenAI API reachable
+   [WARN] Anthropic key not configured
+
+ Checking channels...
+   [PASS] Web channel configured
+   [PASS] Web UI accessible on :3000
+   [FAIL] Telegram token invalid
+
+ Checking tools...
+   [PASS] Browser tool: Chromium found
+   [PASS] Exec tool: sandbox enabled
+
+ Summary: 7 passed, 1 warning, 1 failed
+        </pre>
+        <div class="highlight-box info fragment" style="margin-top: 10px;">
+          Run <code>openclaw doctor</code> anytime to diagnose configuration, connectivity,
+          API key validity, and channel health issues.
+        </div>
+        <aside class="notes">
+          The doctor command is your go-to diagnostic tool. It checks your configuration
+          file for syntax errors, verifies that API keys are valid and providers are reachable,
+          tests channel connectivity, and validates tool setup. If something is not working,
+          openclaw doctor is always the first thing to run.
+        </aside>
+      </section>
+
+      <!-- Slide 11: CLI Commands Reference -->
+      <section>
+        <h2>CLI Commands Reference</h2>
+        <p class="medium">Essential commands at your fingertips</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="fragment">
+              <td><code class="cyan">openclaw</code></td>
+              <td>Start OpenClaw (runs onboarding on first launch)</td>
+            </tr>
+            <tr class="fragment">
+              <td><code class="cyan">openclaw doctor</code></td>
+              <td>Run diagnostics on config, connectivity, and health</td>
+            </tr>
+            <tr class="fragment">
+              <td><code class="cyan">openclaw config</code></td>
+              <td>Display the current merged configuration</td>
+            </tr>
+            <tr class="fragment">
+              <td><code class="cyan">openclaw --version</code></td>
+              <td>Show installed version</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="highlight-box info fragment" style="margin-top: 15px;">
+          <strong class="blue">Tip:</strong> Use <code>openclaw --help</code> to see all available commands
+          and options.
+        </div>
+        <aside class="notes">
+          Here is a quick reference for the most important CLI commands. The bare openclaw
+          command starts the gateway and runs onboarding on first launch. The doctor command
+          runs diagnostics. The config command shows the current merged configuration, which
+          is useful when using $include directives. And --version shows the installed version.
+        </aside>
+      </section>
+
+      <!-- Slide 12: Deployment Tips -->
+      <section>
+        <h2>Deployment Tips</h2>
+        <p class="medium">Running OpenClaw in production</p>
+        <div class="columns" style="margin-top: 15px;">
+          <div class="col">
+            <div class="highlight-box info fragment">
+              <strong class="blue">Process Manager</strong><br>
+              Use <code>systemd</code> or <code>pm2</code> to keep OpenClaw running.
+              <pre><code class="language-bash">pm2 start openclaw --name oc
+pm2 save
+pm2 startup</code></pre>
+            </div>
+            <div class="highlight-box success fragment">
+              <strong class="green">Reverse Proxy</strong><br>
+              Put nginx or Caddy in front of OpenClaw for SSL termination,
+              load balancing, and static file serving.
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box warning fragment">
+              <strong class="yellow">Enable HTTPS</strong><br>
+              Always use HTTPS in production. Use Let's Encrypt for free certificates.
+              Never expose the gateway over plain HTTP.
+            </div>
+            <div class="highlight-box fragment">
+              <strong class="red">Regular Backups</strong><br>
+              Back up your <code>workspace/</code> directory regularly.
+              It contains conversations, skills, and agent state.
+              <pre><code class="language-bash">tar -czf backup.tar.gz workspace/</code></pre>
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          For production deployments, use a process manager like pm2 or systemd to ensure
+          OpenClaw stays running and restarts on crashes. Put a reverse proxy like nginx
+          in front for HTTPS, which you should always enable in production. And back up
+          your workspace directory regularly, as it contains all your conversations,
+          custom skills, and agent state data.
+        </aside>
+      </section>
+
+      <!-- Slide 13: Course Complete -->
+      <section>
+        <h2>Course Complete!</h2>
+        <p class="medium">You have completed all 6 sessions</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Session</th>
+              <th>Topic</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="session-badge">1</span></td>
+              <td>What is OpenClaw? &mdash; Introduction &amp; motivation</td>
+            </tr>
+            <tr>
+              <td><span class="session-badge">2</span></td>
+              <td>Architecture &amp; Gateway &mdash; Core components</td>
+            </tr>
+            <tr>
+              <td><span class="session-badge">3</span></td>
+              <td>Channels &amp; Nodes &mdash; Multi-channel, distributed</td>
+            </tr>
+            <tr>
+              <td><span class="session-badge">4</span></td>
+              <td>Agents &amp; Sessions &mdash; AI personalities, memory</td>
+            </tr>
+            <tr>
+              <td><span class="session-badge">5</span></td>
+              <td>Tools, Skills &amp; Sandbox &mdash; Extensibility</td>
+            </tr>
+            <tr>
+              <td><span class="session-badge">6</span></td>
+              <td>Installation, Config &amp; Security &mdash; Production readiness</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="highlight-box success fragment" style="margin-top: 15px;">
+          <strong class="green">What to do next:</strong>
+          Join the community, contribute to the project, build and share your own Skills on ClawHub!
+        </div>
+        <aside class="notes">
+          Congratulations on completing all six sessions of Learning OpenClaw! You now
+          understand the full platform: from what OpenClaw is and its architecture, through
+          channels, agents, tools, and skills, to installation and security. The next step
+          is to get hands-on. Install OpenClaw, build your own agent, create custom skills,
+          and join the community.
+        </aside>
+      </section>
+
+      <!-- Slide 14: Resources -->
+      <section>
+        <h2>Resources</h2>
+        <div class="highlight-box info">
+          <strong class="blue">Getting Started Guide</strong><br>
+          <a href="https://docs.openclaw.ai/getting-started" target="_blank">docs.openclaw.ai/getting-started</a>
+          &mdash; Step-by-step setup instructions
+        </div>
+        <div class="highlight-box success">
+          <strong class="green">Security Documentation</strong><br>
+          <a href="https://docs.openclaw.ai/security" target="_blank">docs.openclaw.ai/security</a>
+          &mdash; In-depth security configuration guide
+        </div>
+        <div class="highlight-box warning">
+          <strong class="yellow">Docker Documentation</strong><br>
+          <a href="https://docs.openclaw.ai/docker" target="_blank">docs.openclaw.ai/docker</a>
+          &mdash; Container deployment guide and Docker Compose examples
+        </div>
+        <div class="highlight-box" style="border-left-color: var(--oc-purple);">
+          <strong class="purple">Community</strong><br>
+          <a href="https://docs.openclaw.ai/help" target="_blank">docs.openclaw.ai/help</a>
+          &mdash; Get help, report bugs, join discussions
+        </div>
+        <div class="fragment" style="margin-top: 20px;">
+          <p class="medium">
+            <strong class="cyan">Thank you for learning OpenClaw!</strong>
+          </p>
+          <p class="small">
+            <a href="index.html">&larr; Back to Table of Contents</a>
+          </p>
+        </div>
+        <aside class="notes">
+          Here are the essential resources for your OpenClaw journey. The Getting Started
+          guide walks you through the complete setup. The Security documentation covers
+          all the details we discussed today. The Docker documentation has compose files
+          for container deployments. And the community page connects you with other users
+          and contributors. Thank you for completing Learning OpenClaw!
+        </aside>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <a href="index.html">&larr; Table of Contents</a> &middot; Session 6 of 6
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+    Reveal.initialize({
+      hash: true,
+      slideNumber: true,
+      plugins: [RevealHighlight, RevealNotes],
+    }).then(() => {
+      mermaid.run({ querySelector: '.mermaid' });
+      Reveal.on('slidechanged', () => { mermaid.run({ querySelector: '.mermaid' }); });
+    });
+  </script>
+</body>
+</html>

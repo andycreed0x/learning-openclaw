@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Channels & Multi-Platform - Learning OpenClaw</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+  <link rel="stylesheet" href="../assets/custom.css">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- Slide 1: Title -->
+      <section>
+        <span class="session-badge">Session 3 of 6</span>
+        <h1>Channels & Multi-Platform</h1>
+        <p>Connecting OpenClaw to the world</p>
+        <p class="small">One assistant, every platform</p>
+        <aside class="notes">
+          Welcome to Session 3. Today we explore how OpenClaw connects to messaging platforms
+          through its channel abstraction layer. By the end, you'll understand how to configure
+          channels, control access with DM policies, and route messages to the right agent.
+        </aside>
+      </section>
+
+      <!-- Slide 2: What are Channels? -->
+      <section>
+        <h2>What are Channels?</h2>
+        <div class="highlight-box info">
+          <strong>Channel</strong> = a messaging platform connector that translates
+          platform-specific messages into OpenClaw's internal format.
+        </div>
+        <ul>
+          <li class="fragment">Each channel handles one platform connection</li>
+          <li class="fragment">Normalizes messages into a <span class="cyan">unified format</span></li>
+          <li class="fragment">Manages authentication with external APIs</li>
+          <li class="fragment">Handles platform-specific features (reactions, threads, buttons)</li>
+        </ul>
+        <aside class="notes">
+          Channels are the bridge between external messaging platforms and OpenClaw's core.
+          They abstract away all platform-specific details so the rest of the system
+          only has to deal with one unified message format.
+        </aside>
+      </section>
+
+      <!-- Slide 3: 13+ Supported Platforms -->
+      <section>
+        <h2>13+ Supported Platforms</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Platform</th>
+              <th>Library / Protocol</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="fragment"><td>WhatsApp</td><td>Baileys</td><td class="green">Stable</td></tr>
+            <tr class="fragment"><td>Telegram</td><td>Grammy</td><td class="green">Stable</td></tr>
+            <tr class="fragment"><td>Discord</td><td>discord.js</td><td class="green">Stable</td></tr>
+            <tr class="fragment"><td>Slack</td><td>Bolt</td><td class="green">Stable</td></tr>
+            <tr class="fragment"><td>Web Chat</td><td>Built-in</td><td class="green">Stable</td></tr>
+            <tr class="fragment"><td>Matrix</td><td>matrix-js-sdk</td><td class="green">Stable</td></tr>
+            <tr class="fragment"><td>Signal</td><td>signal-cli</td><td class="yellow">Beta</td></tr>
+            <tr class="fragment"><td>IRC</td><td>irc-framework</td><td class="green">Stable</td></tr>
+            <tr class="fragment"><td>XMPP</td><td>stanza.io</td><td class="green">Stable</td></tr>
+            <tr class="fragment"><td>Nostr</td><td>nostr-tools</td><td class="yellow">Beta</td></tr>
+            <tr class="fragment"><td>SMS</td><td>Twilio</td><td class="green">Stable</td></tr>
+            <tr class="fragment"><td>Line</td><td>LINE SDK</td><td class="green">Stable</td></tr>
+            <tr class="fragment"><td>Custom</td><td>Webhook</td><td class="green">Stable</td></tr>
+          </tbody>
+        </table>
+        <aside class="notes">
+          OpenClaw supports over 13 messaging platforms out of the box. Each uses a
+          well-maintained library or protocol. Some newer channels like Signal and Nostr
+          are still in beta but fully functional. The custom webhook channel lets you
+          integrate with any platform that can send HTTP requests.
+        </aside>
+      </section>
+
+      <!-- Slide 4: Channel Architecture -->
+      <section>
+        <h2>Channel Architecture</h2>
+        <div class="mermaid">
+graph LR
+    subgraph "User Devices"
+        WA["📱 WhatsApp"]
+        TG["📱 Telegram"]
+        DC["💬 Discord"]
+        WB["🌐 Browser"]
+    end
+    subgraph "Node"
+        CH1[WA Channel]
+        CH2[TG Channel]
+        CH3[DC Channel]
+        CH4[Web Channel]
+    end
+    subgraph "Gateway"
+        RT[Router]
+    end
+    WA --> CH1
+    TG --> CH2
+    DC --> CH3
+    WB --> CH4
+    CH1 --> RT
+    CH2 --> RT
+    CH3 --> RT
+    CH4 --> RT
+        </div>
+        <p class="small fragment">All channels feed into a single router that dispatches to the correct agent.</p>
+        <aside class="notes">
+          This diagram shows how messages flow from user devices through platform-specific
+          channels and into the central router. The router is responsible for deciding
+          which agent should handle each message. Notice that each channel runs independently;
+          if one goes down, the others keep working.
+        </aside>
+      </section>
+
+      <!-- Slide 5: Channel Configuration Example -->
+      <section>
+        <h2>Channel Configuration</h2>
+        <p>Defined in your node's <span class="cyan">config file</span>:</p>
+        <pre><code class="language-json5" data-trim>
+{
+  channels: {
+    "my-telegram": {
+      type: "telegram",
+      botToken: "$TELEGRAM_BOT_TOKEN",
+      dmPolicy: "pairing"
+    },
+    "my-discord": {
+      type: "discord",
+      botToken: "$DISCORD_BOT_TOKEN",
+      dmPolicy: "allowlist"
+    },
+    "web-ui": {
+      type: "web",
+      port: 3100,
+      dmPolicy: "open"
+    }
+  }
+}
+        </code></pre>
+        <div class="highlight-box warning fragment">
+          <strong>Tip:</strong> Use environment variables (<code>$VAR</code>) for secrets &mdash; never hardcode tokens.
+        </div>
+        <aside class="notes">
+          Channel configuration lives in your node's JSON5 config. Each channel gets a
+          unique name, a type, and platform-specific settings. Notice how secrets are
+          referenced via environment variables. The dmPolicy setting controls who can
+          message the bot in DMs.
+        </aside>
+      </section>
+
+      <!-- Slide 6: DM Policies -->
+      <section>
+        <h2>DM Policies</h2>
+        <p>Control who can message your assistant privately</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Policy</th>
+              <th>Behavior</th>
+              <th>Best For</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="fragment">
+              <td class="cyan">pairing</td>
+              <td>User must enter a verification code</td>
+              <td>Personal use, families</td>
+            </tr>
+            <tr class="fragment">
+              <td class="green">allowlist</td>
+              <td>Only pre-approved user IDs can DM</td>
+              <td>Teams, organizations</td>
+            </tr>
+            <tr class="fragment">
+              <td class="yellow">open</td>
+              <td>Anyone can DM the bot</td>
+              <td>Public bots, demos</td>
+            </tr>
+            <tr class="fragment">
+              <td class="red">disabled</td>
+              <td>No DMs allowed at all</td>
+              <td>Group-only bots</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="highlight-box success fragment">
+          <strong>Recommendation:</strong> Start with <code>pairing</code> for personal use.
+          It provides strong security with a simple UX.
+        </div>
+        <aside class="notes">
+          DM policies are a key security feature. Pairing is the recommended default:
+          users get a one-time code they must enter in the chat to prove they have access
+          to the OpenClaw dashboard. Allowlist is useful for teams where you know
+          every user's platform ID. Open should only be used for public-facing bots.
+        </aside>
+      </section>
+
+      <!-- Slide 7: Multi-Agent Routing -->
+      <section>
+        <h2>Multi-Agent Routing</h2>
+        <p class="medium">How does OpenClaw decide which agent handles a message?</p>
+        <div class="mermaid">
+graph TB
+    MSG[Incoming Message] --> P1{Priority 1:<br/>Exact Match}
+    P1 -->|Match| A1[Agent A]
+    P1 -->|No Match| P2{Priority 2:<br/>Channel Default}
+    P2 -->|Match| A2[Agent B]
+    P2 -->|No Match| P3{Priority 3:<br/>Global Default}
+    P3 --> A3[Fallback Agent]
+        </div>
+        <ul class="small fragment">
+          <li><strong>Exact Match:</strong> Channel + user/group mapped to a specific agent</li>
+          <li><strong>Channel Default:</strong> Default agent for that channel</li>
+          <li><strong>Global Default:</strong> System-wide fallback agent</li>
+        </ul>
+        <aside class="notes">
+          The routing system uses a priority chain. First it checks if there's a direct
+          mapping for that specific channel and user or group. If not, it falls back to
+          the channel's default agent. Finally, if nothing matches, the global default
+          agent handles the message. This lets you have different agents for different
+          contexts without complex configuration.
+        </aside>
+      </section>
+
+      <!-- Slide 8: Group Chat Support -->
+      <section>
+        <h2>Group Chat Support</h2>
+        <div class="columns">
+          <div class="col">
+            <h3>How Groups Work</h3>
+            <ul>
+              <li class="fragment">Bot joins as a group member</li>
+              <li class="fragment">Listens for <span class="cyan">@mentions</span> or trigger words</li>
+              <li class="fragment">Can be configured to listen to <span class="yellow">all messages</span> or only when mentioned</li>
+              <li class="fragment">Group context is shared across members</li>
+            </ul>
+          </div>
+          <div class="col">
+            <h3>Activation Modes</h3>
+            <div class="highlight-box info fragment">
+              <strong>@mention:</strong> Only responds when @mentioned by name
+            </div>
+            <div class="highlight-box success fragment">
+              <strong>keyword:</strong> Responds to configured trigger words
+            </div>
+            <div class="highlight-box warning fragment">
+              <strong>always:</strong> Responds to every message in the group
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          Group chat support varies by platform but the concepts are the same.
+          Most users prefer @mention mode so the bot doesn't interrupt normal
+          group conversations. The keyword mode is useful for creating support
+          bots that activate on phrases like "help" or "question".
+        </aside>
+      </section>
+
+      <!-- Slide 9: Media Support -->
+      <section>
+        <h2>Media Support by Channel</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Channel</th>
+              <th>Images</th>
+              <th>Audio</th>
+              <th>Files</th>
+              <th>Buttons</th>
+              <th>Reactions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="fragment">
+              <td>WhatsApp</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+            </tr>
+            <tr class="fragment">
+              <td>Telegram</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+            </tr>
+            <tr class="fragment">
+              <td>Discord</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+            </tr>
+            <tr class="fragment">
+              <td>Slack</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+            </tr>
+            <tr class="fragment">
+              <td>Web Chat</td>
+              <td class="green">Yes</td>
+              <td class="yellow">Partial</td>
+              <td class="green">Yes</td>
+              <td class="green">Yes</td>
+              <td class="red">No</td>
+            </tr>
+            <tr class="fragment">
+              <td>IRC</td>
+              <td class="red">No</td>
+              <td class="red">No</td>
+              <td class="red">No</td>
+              <td class="red">No</td>
+              <td class="red">No</td>
+            </tr>
+            <tr class="fragment">
+              <td>SMS</td>
+              <td class="green">Yes</td>
+              <td class="red">No</td>
+              <td class="red">No</td>
+              <td class="red">No</td>
+              <td class="red">No</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="small fragment">OpenClaw gracefully degrades when a platform doesn't support a feature.</p>
+        <aside class="notes">
+          Not all platforms support the same media types. OpenClaw handles this
+          gracefully: if an agent tries to send a button to IRC, it will fall back
+          to a text-based menu. Images sent to SMS use MMS. The key point is that
+          your agent code doesn't need to worry about platform differences.
+        </aside>
+      </section>
+
+      <!-- Slide 10: Web Channel Deep Dive -->
+      <section>
+        <h2>Web Channel Deep Dive</h2>
+        <div class="columns">
+          <div class="col">
+            <h3>Features</h3>
+            <ul>
+              <li class="fragment">Built-in web UI &mdash; no external accounts needed</li>
+              <li class="fragment">Customizable theme and branding</li>
+              <li class="fragment">Supports markdown rendering</li>
+              <li class="fragment">File upload and image display</li>
+              <li class="fragment">Embeddable via iframe</li>
+            </ul>
+          </div>
+          <div class="col">
+            <h3>Configuration</h3>
+            <pre class="fragment"><code class="language-json5" data-trim>
+{
+  "web-ui": {
+    type: "web",
+    port: 3100,
+    title: "My Assistant",
+    theme: "dark",
+    dmPolicy: "pairing"
+  }
+}
+            </code></pre>
+          </div>
+        </div>
+        <div class="highlight-box info fragment">
+          <strong>Quick Start:</strong> The web channel is the easiest way to get started.
+          No API keys, no bot registration &mdash; just configure a port and go.
+        </div>
+        <aside class="notes">
+          The web channel is often the first one people set up because it requires
+          zero external configuration. Just pick a port, start the node, and open
+          your browser. It's also great for embedding in existing web applications.
+          The UI is responsive and works on mobile devices.
+        </aside>
+      </section>
+
+      <!-- Slide 11: Key Takeaways -->
+      <section>
+        <h2>Key Takeaways</h2>
+        <div class="highlight-box success fragment">
+          <strong>1. Channels abstract platform complexity</strong><br>
+          Write agent logic once, deploy to 13+ platforms without changes.
+        </div>
+        <div class="highlight-box info fragment">
+          <strong>2. DM policies control access</strong><br>
+          Choose from pairing, allowlist, open, or disabled to match your security needs.
+        </div>
+        <div class="highlight-box warning fragment">
+          <strong>3. Routing determines which agent responds</strong><br>
+          Priority chain: exact match &rarr; channel default &rarr; global default.
+        </div>
+        <aside class="notes">
+          Three things to remember from this session: Channels handle all platform
+          differences so you only write agent logic once. DM policies are your first
+          line of access control. And routing lets you direct messages to the right
+          agent automatically. In the next session, we'll explore agents themselves
+          in depth.
+        </aside>
+      </section>
+
+      <!-- Slide 12: Resources -->
+      <section>
+        <h2>Resources</h2>
+        <ul>
+          <li><a href="https://openclaw.com/docs/channels">Channel Configuration Docs</a></li>
+          <li><a href="https://openclaw.com/docs/channels/web">Web Channel Reference</a></li>
+          <li><a href="https://openclaw.com/docs/channels/telegram">Telegram Channel Guide</a></li>
+          <li><a href="https://openclaw.com/docs/channels/whatsapp">WhatsApp Channel Guide</a></li>
+          <li><a href="https://openclaw.com/docs/routing">Message Routing Docs</a></li>
+          <li><a href="https://openclaw.com/docs/dm-policies">DM Policy Reference</a></li>
+        </ul>
+        <div class="highlight-box info">
+          <strong>Next session:</strong> Agents, Memory & Sessions &mdash; how to build
+          AI personalities with persistent memory.
+        </div>
+        <aside class="notes">
+          Here are the relevant documentation links for further reading.
+          Next session covers agents, which is where the real magic happens:
+          personality configuration, memory management, and session lifecycle.
+        </aside>
+      </section>
+
+    </div>
+  </div>
+  <div class="nav-footer">
+    <a href="index.html">&larr; Table of Contents</a> &middot; Session 3 of 6
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+    Reveal.initialize({
+      hash: true,
+      slideNumber: true,
+      plugins: [RevealHighlight, RevealNotes],
+    }).then(() => {
+      mermaid.run({ querySelector: '.mermaid' });
+      Reveal.on('slidechanged', () => { mermaid.run({ querySelector: '.mermaid' }); });
+    });
+  </script>
+</body>
+</html>

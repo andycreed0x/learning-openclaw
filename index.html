@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learning OpenClaw - Curso Acelerado / Crash Course</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1a1a2e;
+      color: #ecf0f1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      text-align: center;
+      max-width: 700px;
+      padding: 40px 20px;
+    }
+    .logo-ascii {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.6em;
+      line-height: 1.15;
+      color: #2ecc71;
+      margin-bottom: 30px;
+      white-space: pre;
+      display: inline-block;
+      text-align: left;
+    }
+    h1 {
+      font-size: 2.5em;
+      color: #e74c3c;
+      margin-bottom: 5px;
+    }
+    .subtitle {
+      font-size: 1.2em;
+      color: #f39c12;
+      margin-bottom: 40px;
+    }
+    .lang-cards {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .lang-card {
+      background: #16213e;
+      border: 2px solid #2c3e50;
+      border-radius: 16px;
+      padding: 40px 50px;
+      text-decoration: none;
+      color: #ecf0f1;
+      transition: all 0.3s ease;
+      min-width: 220px;
+    }
+    .lang-card:hover {
+      border-color: #e74c3c;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(231, 76, 60, 0.2);
+    }
+    .lang-card .flag {
+      font-size: 3em;
+      display: block;
+      margin-bottom: 15px;
+    }
+    .lang-card .lang-name {
+      font-size: 1.4em;
+      font-weight: 700;
+      color: #e74c3c;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .lang-card .lang-desc {
+      font-size: 0.9em;
+      color: #95a5a6;
+    }
+    .footer {
+      margin-top: 50px;
+      font-size: 0.8em;
+      color: #7f8c8d;
+    }
+    .footer a {
+      color: #1abc9c;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+    .sessions-count {
+      display: inline-block;
+      background: rgba(231, 76, 60, 0.2);
+      border: 1px solid #e74c3c;
+      border-radius: 20px;
+      padding: 5px 15px;
+      font-size: 0.85em;
+      color: #e74c3c;
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo-ascii">
+  ___                    ____ _
+ / _ \ _ __   ___ _ __ / ___| | __ ___      __
+| | | | '_ \ / _ \ '_ \ |   | |/ _` \ \ /\ / /
+| |_| | |_) |  __/ | | | |___| | (_| |\ V  V /
+ \___/| .__/ \___|_| |_|\____|_|\__,_| \_/\_/
+      |_|                                       </div>
+
+    <h1>Learning OpenClaw</h1>
+    <p class="subtitle">Crash Course / Curso Acelerado</p>
+
+    <div class="sessions-count">6 Sessions / 6 Sesiones</div>
+
+    <div class="lang-cards">
+      <a href="en/index.html" class="lang-card">
+        <span class="flag">&#127468;&#127463;</span>
+        <span class="lang-name">English</span>
+        <span class="lang-desc">Crash Course</span>
+      </a>
+      <a href="es/index.html" class="lang-card">
+        <span class="flag">&#127466;&#127480;</span>
+        <span class="lang-name">Espa&ntilde;ol</span>
+        <span class="lang-desc">Curso Acelerado</span>
+      </a>
+    </div>
+
+    <div class="footer">
+      <p>Visual slides with diagrams, ASCII art &amp; narration scripts</p>
+      <p style="margin-top:8px;">
+        <a href="https://docs.openclaw.ai" target="_blank">docs.openclaw.ai</a> &middot;
+        <a href="https://github.com/openclaw/openclaw" target="_blank">GitHub</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,206 @@
+/* OpenClaw Learning - Custom Styles */
+
+/* Brand Colors */
+:root {
+  --oc-primary: #e74c3c;
+  --oc-secondary: #2c3e50;
+  --oc-accent: #f39c12;
+  --oc-bg-dark: #1a1a2e;
+  --oc-bg-light: #f5f5f5;
+  --oc-text: #ecf0f1;
+  --oc-green: #2ecc71;
+  --oc-blue: #3498db;
+  --oc-purple: #9b59b6;
+  --oc-cyan: #1abc9c;
+}
+
+/* Slide overrides */
+.reveal {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.reveal h1, .reveal h2, .reveal h3 {
+  text-transform: none;
+  font-weight: 700;
+}
+
+.reveal h1 {
+  font-size: 2.2em;
+  color: var(--oc-primary);
+}
+
+.reveal h2 {
+  font-size: 1.6em;
+  color: var(--oc-accent);
+}
+
+.reveal h3 {
+  font-size: 1.3em;
+  color: var(--oc-cyan);
+}
+
+/* ASCII art styling */
+.ascii-art {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.55em;
+  line-height: 1.2;
+  text-align: left;
+  background: var(--oc-bg-dark);
+  color: var(--oc-green);
+  padding: 20px;
+  border-radius: 8px;
+  display: inline-block;
+  border: 1px solid var(--oc-green);
+  white-space: pre;
+}
+
+/* Mermaid diagram container */
+.mermaid {
+  font-size: 0.8em;
+}
+
+.mermaid svg {
+  max-width: 100%;
+  max-height: 500px;
+}
+
+/* Color utility classes */
+.red { color: var(--oc-primary) !important; }
+.blue { color: var(--oc-blue) !important; }
+.green { color: var(--oc-green) !important; }
+.yellow { color: var(--oc-accent) !important; }
+.purple { color: var(--oc-purple) !important; }
+.cyan { color: var(--oc-cyan) !important; }
+.white { color: #fff !important; }
+
+/* Highlight boxes */
+.highlight-box {
+  background: rgba(231, 76, 60, 0.15);
+  border-left: 4px solid var(--oc-primary);
+  padding: 15px 20px;
+  margin: 15px 0;
+  border-radius: 0 8px 8px 0;
+  text-align: left;
+  font-size: 0.8em;
+}
+
+.highlight-box.info {
+  background: rgba(52, 152, 219, 0.15);
+  border-left-color: var(--oc-blue);
+}
+
+.highlight-box.success {
+  background: rgba(46, 204, 113, 0.15);
+  border-left-color: var(--oc-green);
+}
+
+.highlight-box.warning {
+  background: rgba(243, 156, 18, 0.15);
+  border-left-color: var(--oc-accent);
+}
+
+/* Tables */
+.reveal table {
+  font-size: 0.7em;
+  border-collapse: collapse;
+  margin: 15px auto;
+}
+
+.reveal table th {
+  background: var(--oc-secondary);
+  color: var(--oc-text);
+  padding: 8px 15px;
+  font-weight: 600;
+}
+
+.reveal table td {
+  padding: 6px 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.reveal table tr:nth-child(even) {
+  background: rgba(255,255,255,0.05);
+}
+
+/* Two-column layout */
+.columns {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.columns .col {
+  flex: 1;
+  text-align: left;
+}
+
+/* Navigation footer */
+.nav-footer {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.5em;
+  opacity: 0.6;
+  z-index: 100;
+}
+
+.nav-footer a {
+  color: var(--oc-cyan) !important;
+  text-decoration: none;
+}
+
+.nav-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Session badge */
+.session-badge {
+  display: inline-block;
+  background: var(--oc-primary);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.6em;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* Code blocks */
+.reveal pre code {
+  font-size: 0.85em;
+  line-height: 1.4;
+  max-height: 450px;
+  border-radius: 8px;
+}
+
+/* List styling */
+.reveal ul, .reveal ol {
+  text-align: left;
+  font-size: 0.85em;
+}
+
+.reveal li {
+  margin-bottom: 8px;
+}
+
+/* Small text helper */
+.small { font-size: 0.6em !important; }
+.medium { font-size: 0.75em !important; }
+
+/* Emoji size fix */
+.emoji {
+  font-size: 1.5em;
+  vertical-align: middle;
+}
+
+/* Link styling */
+.reveal a {
+  color: var(--oc-cyan);
+}
+
+/* Slide number styling */
+.reveal .slide-number {
+  font-size: 14px;
+  color: var(--oc-accent);
+}

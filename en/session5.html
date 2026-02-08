@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tools, Skills & Sandbox - Learning OpenClaw</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+  <link rel="stylesheet" href="../assets/custom.css">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- Slide 1: Title -->
+      <section>
+        <span class="session-badge">Session 5 of 6</span>
+        <h1>Tools, Skills &amp; Sandbox</h1>
+        <pre class="ascii-art">
+  ___                    ____ _
+ / _ \ _ __   ___ _ __ / ___| | __ ___      __
+| | | | '_ \ / _ \ '_ \ |   | |/ _` \ \ /\ / /
+| |_| | |_) |  __/ | | | |___| | (_| |\ V  V /
+ \___/| .__/ \___|_| |_|\____|_|\__,_| \_/\_/
+      |_|
+        </pre>
+        <p class="medium">Extending your agent with real-world capabilities</p>
+        <aside class="notes">
+          Welcome to Session 5. In this session we explore how OpenClaw agents go beyond
+          conversation. Tools let agents interact with the real world, Skills package
+          reusable functionality, and the Sandbox keeps everything safe.
+        </aside>
+      </section>
+
+      <!-- Slide 2: What are Tools? -->
+      <section>
+        <h2>What are Tools?</h2>
+        <p class="medium">Tools extend what agents can do <strong class="yellow">beyond conversation</strong></p>
+        <div class="columns" style="margin-top: 20px;">
+          <div class="col">
+            <div class="highlight-box info fragment">
+              <strong class="blue">Without Tools</strong><br>
+              Agents can only generate text responses. They are limited to what the AI model knows.
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box success fragment">
+              <strong class="green">With Tools</strong><br>
+              Agents can browse the web, read files, execute code, send messages, schedule tasks, and more.
+            </div>
+          </div>
+        </div>
+        <div class="highlight-box warning fragment" style="margin-top: 15px;">
+          Tools allow agents to <strong class="yellow">interact with the real world</strong> &mdash;
+          reading data, performing actions, and returning results back to the conversation.
+        </div>
+        <aside class="notes">
+          Think of tools as the hands and eyes of your AI agent. Without tools, an agent
+          can only talk. With tools, it can browse websites, read and write files, run
+          shell commands, schedule reminders, and much more. Tools are what make OpenClaw
+          agents truly useful in day-to-day tasks.
+        </aside>
+      </section>
+
+      <!-- Slide 3: Tool Categories -->
+      <section>
+        <h2>Tool Categories</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Examples</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="fragment">
+              <td class="blue">Browser</td>
+              <td>Web browsing &amp; scraping</td>
+              <td>Navigate, screenshot, extract</td>
+            </tr>
+            <tr class="fragment">
+              <td class="purple">Canvas</td>
+              <td>Visual content creation</td>
+              <td>Draw, generate images</td>
+            </tr>
+            <tr class="fragment">
+              <td class="green">Node</td>
+              <td>System operations</td>
+              <td>File read/write, HTTP requests</td>
+            </tr>
+            <tr class="fragment">
+              <td class="yellow">Cron</td>
+              <td>Scheduled tasks</td>
+              <td>Reminders, periodic checks</td>
+            </tr>
+            <tr class="fragment">
+              <td class="cyan">Webhooks</td>
+              <td>HTTP endpoints</td>
+              <td>Receive external triggers</td>
+            </tr>
+            <tr class="fragment">
+              <td class="red">Exec</td>
+              <td>Code execution</td>
+              <td>Run scripts, commands</td>
+            </tr>
+          </tbody>
+        </table>
+        <aside class="notes">
+          OpenClaw organizes tools into six categories. Browser tools let agents navigate
+          the web. Canvas tools handle visual content. Node tools perform system-level
+          operations. Cron tools schedule recurring tasks. Webhooks allow external systems
+          to trigger the agent. And Exec tools run shell commands and scripts. Each category
+          can be enabled or disabled independently for each agent.
+        </aside>
+      </section>
+
+      <!-- Slide 4: Tool Execution Flow -->
+      <section>
+        <h2>Tool Execution Flow</h2>
+        <p class="medium">How the agent decides to use a tool</p>
+        <div class="mermaid">
+graph TB
+    A["Agent receives request"] --> D{"Needs tool?"}
+    D -->|No| R["Direct response"]
+    D -->|Yes| T["Select tool"]
+    T --> S{"Sandbox enabled?"}
+    S -->|Yes| SB["Run in sandbox"]
+    S -->|No| EX["Run directly"]
+    SB --> RES["Tool result"]
+    EX --> RES
+    RES --> A2["Agent processes result"]
+    A2 --> RESP["Final response"]
+        </div>
+        <aside class="notes">
+          When an agent receives a request, it first decides whether a tool is needed.
+          If not, it responds directly. If a tool is needed, the agent selects the
+          appropriate one. The system then checks whether sandboxing is enabled. If so,
+          the tool runs in an isolated environment. The result is returned to the agent,
+          which processes it and formulates the final response to the user.
+        </aside>
+      </section>
+
+      <!-- Slide 5: Browser Tool Deep Dive -->
+      <section>
+        <h2>Browser Tool Deep Dive</h2>
+        <p class="medium">Headless Chromium via Puppeteer</p>
+        <div class="columns" style="margin-top: 15px;">
+          <div class="col">
+            <ul>
+              <li class="fragment">Navigate to any URL</li>
+              <li class="fragment">Take screenshots</li>
+              <li class="fragment">Click elements &amp; fill forms</li>
+              <li class="fragment">Extract page content</li>
+              <li class="fragment">Wait for dynamic content</li>
+              <li class="fragment">Handle multiple tabs</li>
+            </ul>
+          </div>
+          <div class="col">
+            <pre class="ascii-art fragment">
+ User: "Check the weather
+        on weather.com"
+
+ Agent thinks:
+   &rarr; I need the browser tool
+   &rarr; Navigate to weather.com
+   &rarr; Extract forecast data
+   &rarr; Return to user
+
+ Agent: "Currently 72&deg;F
+         and sunny in NYC"
+            </pre>
+          </div>
+        </div>
+        <div class="highlight-box info fragment" style="margin-top: 10px;">
+          The browser tool runs a real headless browser &mdash; it can interact with JavaScript-heavy
+          sites, SPAs, and pages that require authentication.
+        </div>
+        <aside class="notes">
+          The Browser tool is one of the most powerful tools in OpenClaw. It runs a headless
+          Chromium browser using Puppeteer. This means the agent can navigate to any website,
+          take screenshots, click buttons, fill out forms, and extract content. It handles
+          JavaScript-rendered pages, single-page applications, and even authenticated sessions.
+          A common use case is having the agent check a website and summarize the information.
+        </aside>
+      </section>
+
+      <!-- Slide 6: Exec Tool -->
+      <section>
+        <h2>Exec Tool</h2>
+        <p class="medium">Execute shell commands safely</p>
+        <div class="columns" style="margin-top: 15px;">
+          <div class="col">
+            <ul>
+              <li class="fragment">Run shell commands</li>
+              <li class="fragment">Configurable allowed commands</li>
+              <li class="fragment">Sandbox isolation available</li>
+              <li class="fragment">Timeout protection</li>
+            </ul>
+            <div class="highlight-box warning fragment" style="margin-top: 15px;">
+              <strong class="yellow">Security tip:</strong> Always restrict allowed commands
+              in production to prevent unintended system access.
+            </div>
+          </div>
+          <div class="col fragment">
+            <p class="small" style="text-align: left;">Example configuration:</p>
+            <pre><code class="language-json5">// openclaw.json5
+{
+  tools: {
+    exec: {
+      enabled: true,
+      allowedCommands: [
+        "ls", "cat", "grep",
+        "curl", "ping",
+        "node", "python3"
+      ],
+      timeout: 30000,
+      sandbox: true
+    }
+  }
+}</code></pre>
+          </div>
+        </div>
+        <aside class="notes">
+          The Exec tool lets agents run shell commands on the host system. This is extremely
+          powerful but must be configured carefully. You define a whitelist of allowed commands,
+          set timeouts to prevent runaway processes, and optionally enable sandbox isolation.
+          In production, you should always restrict the allowed commands to only what the
+          agent genuinely needs.
+        </aside>
+      </section>
+
+      <!-- Slide 7: What are Skills? -->
+      <section>
+        <h2>What are Skills?</h2>
+        <p class="medium">Reusable <strong class="cyan">prompt + tool</strong> packages</p>
+        <div class="columns" style="margin-top: 20px;">
+          <div class="col">
+            <div class="highlight-box info fragment">
+              <strong class="blue">Think of Skills as "apps"</strong><br>
+              A Skill bundles a system prompt, tool configuration, and behavior into a
+              single reusable package that any agent can use.
+            </div>
+            <div class="highlight-box success fragment">
+              <strong class="green">Composable</strong><br>
+              Agents can use multiple Skills simultaneously. Skills can be combined
+              to create complex workflows.
+            </div>
+          </div>
+          <div class="col fragment">
+            <p class="small" style="text-align: left;">Example skill definition:</p>
+            <pre><code class="language-json5">// skills/web-search.json5
+{
+  name: "web-search",
+  description: "Search the web",
+  prompt: "You can search the web
+    using the browser tool.
+    Always cite your sources.",
+  tools: ["browser"],
+  triggers: [
+    "search for",
+    "look up",
+    "find online"
+  ]
+}</code></pre>
+          </div>
+        </div>
+        <aside class="notes">
+          Skills are one of the most powerful concepts in OpenClaw. A Skill is essentially
+          an app for your agent. It bundles together a system prompt that defines behavior,
+          tool configurations, and optional trigger phrases. Skills are composable, meaning
+          an agent can use multiple skills at the same time. You can think of skills as
+          modular capabilities that you plug into your agent.
+        </aside>
+      </section>
+
+      <!-- Slide 8: Skills Sources -->
+      <section>
+        <h2>Skills Sources</h2>
+        <p class="medium">Where do Skills come from?</p>
+        <pre class="ascii-art" style="margin-top: 20px;">
+&#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+&#x2502;         Skills Sources          &#x2502;
+&#x251C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;
+&#x2502;  Bundled    &#x2502;Workspace&#x2502; ClawHub &#x2502;
+&#x2502;  (built-in) &#x2502;(custom) &#x2502;(community)&#x2502;
+&#x2502;             &#x2502;         &#x2502;         &#x2502;
+&#x2502; &#x2022; summary   &#x2502; Your own&#x2502; Browse &amp;&#x2502;
+&#x2502; &#x2022; translate &#x2502; skills  &#x2502; install &#x2502;
+&#x2502; &#x2022; web-search&#x2502; in      &#x2502; shared  &#x2502;
+&#x2502; &#x2022; ...       &#x2502; /skills &#x2502; skills  &#x2502;
+&#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
+        </pre>
+        <div class="columns fragment" style="margin-top: 20px;">
+          <div class="col">
+            <div class="highlight-box info">
+              <strong class="blue">Bundled</strong> &mdash; Ship with OpenClaw out of the box
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box success">
+              <strong class="green">Workspace</strong> &mdash; Your custom skills in <code>/skills</code>
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box warning">
+              <strong class="yellow">ClawHub</strong> &mdash; Community-shared skills marketplace
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          Skills come from three sources. Bundled skills ship with OpenClaw and cover common
+          use cases like summarization, translation, and web search. Workspace skills are
+          custom skills you create in your workspace's /skills directory. And ClawHub is the
+          community marketplace where you can browse, install, and share skills with other
+          OpenClaw users. You can mix and match skills from all three sources.
+        </aside>
+      </section>
+
+      <!-- Slide 9: Sandbox Modes -->
+      <section>
+        <h2>Sandbox Modes</h2>
+        <p class="medium">Control how tool execution is isolated</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Mode</th>
+              <th>Behavior</th>
+              <th>Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="fragment">
+              <td><code class="red">off</code></td>
+              <td>No sandbox &mdash; tools run directly on the host</td>
+              <td>Development, trusted environments</td>
+            </tr>
+            <tr class="fragment">
+              <td><code class="yellow">non-main</code></td>
+              <td>Sandbox for non-main agents only</td>
+              <td>Main agent trusted, sub-agents isolated</td>
+            </tr>
+            <tr class="fragment">
+              <td><code class="green">all</code></td>
+              <td>Sandbox everything &mdash; all tool execution isolated</td>
+              <td>Production, multi-user, untrusted input</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="highlight-box warning fragment" style="margin-top: 15px;">
+          <strong class="yellow">Security implication:</strong> With sandbox <code>off</code>, a prompt injection
+          attack could lead to arbitrary code execution on your system. Always use <code>all</code>
+          in production or when processing untrusted input.
+        </div>
+        <aside class="notes">
+          Sandbox mode controls how tool execution is isolated from the host system.
+          In "off" mode, tools run directly on the host with no isolation. This is fine
+          for development but dangerous in production. The "non-main" mode sandboxes
+          sub-agents while trusting the main agent. The "all" mode sandboxes everything,
+          which is the recommended setting for production environments. Remember, without
+          sandboxing, a successful prompt injection could lead to arbitrary code execution.
+        </aside>
+      </section>
+
+      <!-- Slide 10: Sandbox Architecture -->
+      <section>
+        <h2>Sandbox Architecture</h2>
+        <p class="medium">Isolated execution with <code>isolated-vm</code></p>
+        <div class="mermaid">
+graph TB
+    subgraph "Main Process"
+        AG["Agent"]
+    end
+    subgraph "Sandbox (isolated-vm)"
+        EX["Code Execution"]
+        FS["Limited FS Access"]
+        NET["Network Restrictions"]
+    end
+    AG -->|"sandboxed call"| EX
+    EX -->|"result"| AG
+        </div>
+        <div class="columns fragment" style="margin-top: 15px;">
+          <div class="col">
+            <div class="highlight-box success">
+              <strong class="green">What the sandbox provides:</strong><br>
+              Memory isolation, CPU time limits, restricted filesystem access,
+              network restrictions, no access to main process
+            </div>
+          </div>
+          <div class="col">
+            <div class="highlight-box">
+              <strong class="red">What the sandbox prevents:</strong><br>
+              Reading arbitrary files, making unauthorized network calls,
+              accessing environment variables, spawning child processes
+            </div>
+          </div>
+        </div>
+        <aside class="notes">
+          The sandbox uses isolated-vm to create a completely separate execution environment.
+          Code running inside the sandbox cannot access the main process memory, cannot read
+          arbitrary files, cannot make unauthorized network calls, and cannot spawn child
+          processes. The sandbox enforces memory limits, CPU time limits, and restricted
+          filesystem access. Results are passed back to the agent through a controlled channel.
+        </aside>
+      </section>
+
+      <!-- Slide 11: Key Takeaways -->
+      <section>
+        <h2>Key Takeaways</h2>
+        <div class="highlight-box info fragment">
+          <strong class="blue">Tools give agents real-world capabilities</strong><br>
+          From browsing the web to executing code, tools transform conversational agents
+          into powerful assistants that can take action.
+        </div>
+        <div class="highlight-box success fragment">
+          <strong class="green">Skills are reusable packages</strong><br>
+          Bundle prompts, tools, and triggers into shareable, composable "apps" for your agent.
+          Use bundled skills, create your own, or install from ClawHub.
+        </div>
+        <div class="highlight-box warning fragment">
+          <strong class="yellow">The Sandbox protects your system</strong><br>
+          Always enable sandboxing in production. It isolates tool execution, preventing
+          unauthorized access to your host system.
+        </div>
+        <aside class="notes">
+          Let us recap the three key takeaways from this session. First, tools are what
+          give agents the ability to interact with the real world. Second, skills let you
+          package and reuse tool-plus-prompt combinations as modular apps. Third, the sandbox
+          is your safety net, isolating tool execution so that even if something goes wrong,
+          your system remains protected.
+        </aside>
+      </section>
+
+      <!-- Slide 12: Resources -->
+      <section>
+        <h2>Resources</h2>
+        <div class="highlight-box info">
+          <strong class="blue">Tools Documentation</strong><br>
+          <a href="https://docs.openclaw.ai/tools" target="_blank">docs.openclaw.ai/tools</a>
+          &mdash; Full reference for all tool categories and configuration
+        </div>
+        <div class="highlight-box success">
+          <strong class="green">Skills Documentation</strong><br>
+          <a href="https://docs.openclaw.ai/skills" target="_blank">docs.openclaw.ai/skills</a>
+          &mdash; Creating, installing, and managing skills
+        </div>
+        <div class="highlight-box warning">
+          <strong class="yellow">ClawHub</strong><br>
+          <a href="https://clawhub.openclaw.ai" target="_blank">clawhub.openclaw.ai</a>
+          &mdash; Browse and share community skills
+        </div>
+        <div class="fragment" style="margin-top: 30px;">
+          <p class="medium">
+            Next up: <strong class="cyan">Session 6 &mdash; Installation, Config &amp; Security</strong>
+          </p>
+          <p class="small">
+            <a href="session6.html">Go to Session 6 &rarr;</a>
+          </p>
+        </div>
+        <aside class="notes">
+          Here are the key resources. The Tools documentation covers every tool category
+          and how to configure them. The Skills documentation explains how to create and
+          manage skills. And ClawHub is the community marketplace for discovering and
+          sharing skills. In the next and final session, we will cover installation,
+          configuration, and security best practices.
+        </aside>
+      </section>
+
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <a href="index.html">&larr; Table of Contents</a> &middot; Session 5 of 6
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+    Reveal.initialize({
+      hash: true,
+      slideNumber: true,
+      plugins: [RevealHighlight, RevealNotes],
+    }).then(() => {
+      mermaid.run({ querySelector: '.mermaid' });
+      Reveal.on('slidechanged', () => { mermaid.run({ querySelector: '.mermaid' }); });
+    });
+  </script>
+</body>
+</html>
